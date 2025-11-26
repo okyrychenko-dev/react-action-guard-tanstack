@@ -1,28 +1,10 @@
 # @okyrychenko-dev/react-action-guard-tanstack
 
-TanStack Query integration for React Action Guard - manage UI blocking states with TanStack Query operations.
+[![npm version](https://img.shields.io/npm/v/@okyrychenko-dev/react-action-guard-tanstack.svg)](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard-tanstack)
+[![npm downloads](https://img.shields.io/npm/dm/@okyrychenko-dev/react-action-guard-tanstack.svg)](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard-tanstack)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## Installation
-
-```bash
-npm install @okyrychenko-dev/react-action-guard-tanstack
-# or
-yarn add @okyrychenko-dev/react-action-guard-tanstack
-# or
-pnpm add @okyrychenko-dev/react-action-guard-tanstack
-```
-
-## Peer Dependencies
-
-This package requires the following peer dependencies:
-
-```json
-{
-  "@okyrychenko-dev/react-action-guard": "^0.3.0",
-  "@tanstack/react-query": "^5.0.0",
-  "react": "^18.0.0"
-}
-```
+> TanStack Query integration for React Action Guard - seamless UI blocking for queries and mutations
 
 ## Features
 
@@ -32,6 +14,25 @@ This package requires the following peer dependencies:
 - 💬 **Dynamic reasons** - different messages for different states
 - 🔒 **Type-safe** with full TypeScript support
 - ⚡ **Seamless TanStack Query integration** - same API as useQuery/useMutation
+- 🧹 **Automatic cleanup** on component unmount
+- 🪝 **Hooks-based API** for React applications
+
+## Installation
+
+```bash
+npm install @okyrychenko-dev/react-action-guard-tanstack @okyrychenko-dev/react-action-guard @tanstack/react-query zustand
+# or
+yarn add @okyrychenko-dev/react-action-guard-tanstack @okyrychenko-dev/react-action-guard @tanstack/react-query zustand
+# or
+pnpm add @okyrychenko-dev/react-action-guard-tanstack @okyrychenko-dev/react-action-guard @tanstack/react-query zustand
+```
+
+This package requires the following peer dependencies:
+
+- [@okyrychenko-dev/react-action-guard](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard) - The core UI blocking library
+- [@tanstack/react-query](https://tanstack.com/query) - TanStack Query for data fetching
+- [React](https://react.dev/) ^17.0.0 || ^18.0.0
+- [Zustand](https://zustand-demo.pmnd.rs/) - State management (peer dependency of react-action-guard)
 
 ## Quick Start
 
