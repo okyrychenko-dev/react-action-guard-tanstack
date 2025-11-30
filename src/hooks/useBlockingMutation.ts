@@ -1,6 +1,6 @@
-import { useUIBlockingStore } from "@okyrychenko-dev/react-action-guard";
 import { type UseMutationResult, useMutation } from "@tanstack/react-query";
-import { useEffect, useId, useMemo } from "react";
+import { useBlockingManager, useMutationBlockerId } from "../internal";
+import { resolveBlockingReason } from "../utils";
 import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
 
 /**
@@ -28,56 +28,37 @@ export function useBlockingMutation<
   const { blockingConfig, mutationKey, ...mutationOptions } = options;
   const mutation = useMutation({ mutationKey, ...mutationOptions });
 
-  const id = useId();
-  // Use mutationKey for deterministic ID if available, otherwise use random ID
-  const blockerId = useMemo(
-    () => (mutationKey ? `mutation-${JSON.stringify(mutationKey)}` : `mutation-${id}`),
-    [mutationKey, id]
-  );
+  const blockerId = useMutationBlockerId("mutation", mutationKey);
 
-  const { addBlocker, removeBlocker } = useUIBlockingStore((state) => ({
-    addBlocker: state.addBlocker,
-    removeBlocker: state.removeBlocker,
-  }));
+  const {
+    scope,
+    reason = "Saving changes...",
+    reasonOnPending,
+    reasonOnError,
+    priority = 30,
+    onError = false,
+  } = blockingConfig;
 
-  useEffect(() => {
-    const {
+  const shouldBlock = mutation.isPending || (onError && mutation.isError);
+
+  const currentReason = resolveBlockingReason({
+    defaultReason: reason,
+    stateReasons: [
+      { condition: mutation.isPending, reason: reasonOnPending },
+      { condition: mutation.isError, reason: reasonOnError },
+    ],
+  });
+
+  useBlockingManager(
+    {
+      blockerId,
+      shouldBlock,
       scope,
-      reason = "Saving changes...",
-      reasonOnPending,
-      reasonOnError,
-      priority = 30,
-      onError = false,
-    } = blockingConfig;
-
-    const shouldBlock = mutation.isPending || (onError && mutation.isError);
-
-    if (shouldBlock) {
-      // Determine the appropriate reason based on current state
-      let currentReason: string = reason;
-      if (mutation.isPending && reasonOnPending !== undefined) {
-        currentReason = reasonOnPending;
-      } else if (mutation.isError && reasonOnError !== undefined) {
-        currentReason = reasonOnError;
-      }
-
-      addBlocker(blockerId, { scope, reason: currentReason, priority });
-    } else {
-      removeBlocker(blockerId);
-    }
-
-    return () => {
-      removeBlocker(blockerId);
-    };
-  }, [
-    mutation.isPending,
-    mutation.isError,
-    mutation.status,
-    blockerId,
-    addBlocker,
-    removeBlocker,
-    blockingConfig,
-  ]);
+      reason: currentReason,
+      priority,
+    },
+    [mutation.isPending, mutation.isError, mutation.status, blockingConfig]
+  );
 
   return mutation;
 }

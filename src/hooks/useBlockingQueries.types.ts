@@ -1,11 +1,11 @@
+import { QueryKey, UseQueryOptions } from "@tanstack/react-query";
 import type { BaseBlockingConfig } from "../types";
-import type { QueryKey, UseQueryOptions } from "@tanstack/react-query";
 
 /**
- * Configuration for query blocking with dynamic reasons.
+ * Configuration for queries blocking with dynamic reasons.
  * Supports different messages for loading, fetching, and error states.
  */
-export interface QueryBlockingConfig extends BaseBlockingConfig {
+export interface QueriesBlockingConfig extends BaseBlockingConfig {
   /**
    * Whether to block during initial loading (default: true).
    * Set to false to skip blocking during the first data fetch.
@@ -18,7 +18,7 @@ export interface QueryBlockingConfig extends BaseBlockingConfig {
   onFetching?: boolean;
   /**
    * Whether to block on error (default: false).
-   * Set to true to keep UI blocked when query fails.
+   * Set to true to keep UI blocked when any query fails.
    */
   onError?: boolean;
   /**
@@ -32,29 +32,24 @@ export interface QueryBlockingConfig extends BaseBlockingConfig {
    */
   reasonOnFetching?: string;
   /**
-   * Message to show when query fails.
+   * Message to show when any query fails.
    * Falls back to `reason` if not specified.
    */
   reasonOnError?: string;
 }
 
 /**
- * Options for useBlockingQuery hook.
- * Extends TanStack Query's UseQueryOptions with blocking configuration.
+ * Options for a single query within useBlockingQueries.
+ * Extends TanStack Query's UseQueryOptions.
  *
  * @typeParam TQueryFnData - The type of data returned by the query function
  * @typeParam TError - The type of error that can be thrown
  * @typeParam TData - The type of data returned by the hook (after select transformation)
  * @typeParam TQueryKey - The type of the query key
  */
-export interface UseBlockingQueryOptions<
+export type UseBlockingQueriesOptions<
   TQueryFnData = unknown,
   TError = Error,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
-> extends UseQueryOptions<TQueryFnData, TError, TData, TQueryKey> {
-  /**
-   * Configuration for UI blocking behavior during query execution.
-   */
-  blockingConfig: QueryBlockingConfig;
-}
+> = UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>;

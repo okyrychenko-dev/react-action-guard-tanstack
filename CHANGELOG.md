@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-01-30
+
+### Added
+
+- 🪝 **`useBlockingInfiniteQuery` hook** - TanStack Query `useInfiniteQuery` wrapper with UI blocking
+  - Support for infinite scrolling and pagination
+  - Block during initial loading, fetching next/previous page, and error states
+  - Dynamic reasons for different states (`reasonOnLoading`, `reasonOnFetching`, `reasonOnError`)
+
+- 🪝 **`useBlockingQueries` hook** - TanStack Query `useQueries` wrapper with UI blocking
+  - Execute multiple queries in parallel with unified blocking behavior
+  - Block when any query is loading, fetching, or in error state
+  - Dynamic reasons based on query states
+
+- 🎨 **Clean architecture with shared utilities**:
+  - `useBlockingManager` - Centralized blocker lifecycle management
+  - `resolveBlockingReason` - Dynamic reason selection logic
+  - `useQueryBlockerId`, `useMutationBlockerId`, `useRandomBlockerId` - ID generation utilities
+
+- 📚 **Comprehensive documentation**:
+  - Updated README with examples for all 4 hooks
+  - Advanced usage examples for infinite queries and multiple queries
+  - Architecture section explaining internal structure
+  - Expanded Best Practices section with code examples
+
+### Changed
+
+- ♻️ **Refactored all hooks** to use shared utilities
+  - Reduced code duplication by 69% (~220 lines)
+  - Each hook is now ~33% smaller (from ~90 to ~60 lines)
+  - Single source of truth for blocker management logic
+
+- 🏗️ **Improved project structure**:
+  - Created `src/internal/` for internal utilities (not exported)
+  - Created `src/utils/` for pure utility functions
+  - Created `src/types/` for shared type definitions
+  - Added `BaseBlockingConfig` type for common configuration properties
+
+### Improved
+
+- 🧪 **Test coverage**: 61 tests across 4 test suites (from 41 tests)
+- 📖 **Documentation**: README expanded from 468 to 912 lines (+95%)
+- 🔧 **Maintainability**: Changes to blocking logic now affect all hooks automatically
+- 🎯 **Type safety**: All shared utilities fully typed with TypeScript
+- 🧹 **Code quality**: DRY principle applied throughout the codebase
+
+### Technical Details
+
+- All hooks now follow consistent pattern:
+  1. Wrap TanStack Query hook
+  2. Monitor state changes
+  3. Resolve dynamic reasons
+  4. Manage blockers via shared `useBlockingManager`
+  5. Generate stable IDs
+  6. Automatic cleanup
+
 ## [0.1.0] - 2025-01-26
 
 ### Added

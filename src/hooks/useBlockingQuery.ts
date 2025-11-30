@@ -1,6 +1,6 @@
-import { useUIBlockingStore } from "@okyrychenko-dev/react-action-guard";
 import { type QueryKey, type UseQueryResult, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useBlockingManager, useQueryBlockerId } from "../internal";
+import { resolveBlockingReason } from "../utils";
 import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
 
 /**
@@ -28,62 +28,52 @@ export function useBlockingQuery<
   const { blockingConfig, ...queryOptions } = options;
   const query = useQuery(queryOptions);
 
-  const blockerId = useMemo(() => `query-${JSON.stringify(options.queryKey)}`, [options.queryKey]);
+  const blockerId = useQueryBlockerId("query", options.queryKey);
 
-  const { addBlocker, removeBlocker } = useUIBlockingStore((state) => ({
-    addBlocker: state.addBlocker,
-    removeBlocker: state.removeBlocker,
-  }));
+  const {
+    scope,
+    reason = "Loading data...",
+    reasonOnLoading,
+    reasonOnFetching,
+    reasonOnError,
+    priority = 10,
+    onLoading = true,
+    onFetching = false,
+    onError = false,
+  } = blockingConfig;
 
-  useEffect(() => {
-    const {
+  const shouldBlock =
+    (onLoading && query.isLoading) ||
+    (onFetching && query.isFetching && !query.isLoading) ||
+    (onError && query.isError);
+
+  const currentReason = resolveBlockingReason({
+    defaultReason: reason,
+    stateReasons: [
+      { condition: query.isLoading, reason: reasonOnLoading },
+      { condition: query.isFetching && !query.isLoading, reason: reasonOnFetching },
+      { condition: query.isError, reason: reasonOnError },
+    ],
+  });
+
+  useBlockingManager(
+    {
+      blockerId,
+      shouldBlock,
       scope,
-      reason = "Loading data...",
-      reasonOnLoading,
-      reasonOnFetching,
-      reasonOnError,
-      priority = 10,
-      onLoading = true,
-      onFetching = false,
-      onError = false,
-    } = blockingConfig;
-
-    const shouldBlock =
-      (onLoading && query.isLoading) ||
-      (onFetching && query.isFetching && !query.isLoading) ||
-      (onError && query.isError);
-
-    if (shouldBlock) {
-      // Determine the appropriate reason based on current state
-      let currentReason: string = reason;
-      if (query.isLoading && reasonOnLoading !== undefined) {
-        currentReason = reasonOnLoading;
-      } else if (query.isFetching && !query.isLoading && reasonOnFetching !== undefined) {
-        currentReason = reasonOnFetching;
-      } else if (query.isError && reasonOnError !== undefined) {
-        currentReason = reasonOnError;
-      }
-
-      addBlocker(blockerId, { scope, reason: currentReason, priority });
-    } else {
-      removeBlocker(blockerId);
-    }
-
-    return () => {
-      removeBlocker(blockerId);
-    };
-  }, [
-    query.isLoading,
-    query.isFetching,
-    query.isError,
-    query.status,
-    query.dataUpdatedAt,
-    blockingConfig,
-    blockerId,
-    addBlocker,
-    removeBlocker,
-    options.queryKey,
-  ]);
+      reason: currentReason,
+      priority,
+    },
+    [
+      query.isLoading,
+      query.isFetching,
+      query.isError,
+      query.status,
+      query.dataUpdatedAt,
+      blockingConfig,
+      options.queryKey,
+    ]
+  );
 
   return query;
 }

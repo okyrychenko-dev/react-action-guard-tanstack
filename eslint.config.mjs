@@ -134,5 +134,23 @@ export default [
       "no-console": "off",
     },
   },
+  {
+    files: ["src/hooks/useBlockingQueries.ts"],
+    rules: {
+      // useQueries return type is too complex to type explicitly - let TypeScript infer it
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+    },
+  },
+  {
+    rules: {
+      "react-hooks/exhaustive-deps": [
+        "warn",
+        {
+          additionalHooks: "(useBlockingManager)",
+        },
+      ],
+    },
+  },
   prettier,
 ];

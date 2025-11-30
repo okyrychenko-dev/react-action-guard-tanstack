@@ -1,27 +1,12 @@
 import { UseMutationOptions } from "@tanstack/react-query";
-
-/**
- * Base configuration for mutation blocking
- */
-interface BaseMutationBlockingConfig {
-  /**
-   * Scope(s) to block. Can be a single string or array of strings.
-   * Use scopes to control which parts of your UI should be blocked.
-   */
-  scope?: string | ReadonlyArray<string>;
-  /**
-   * Priority level for this blocker (default: 30).
-   * Higher priority blockers take precedence when multiple blockers are active.
-   */
-  priority?: number;
-}
+import type { BaseBlockingConfig } from "../types";
 
 /**
  * Configuration when onError is false (default).
  * Only blocks during pending state.
  * Uses single reason or reasonOnPending for the pending state.
  */
-interface MutationBlockingConfigWithoutError extends BaseMutationBlockingConfig {
+interface MutationBlockingConfigWithoutError extends BaseBlockingConfig {
   /**
    * Whether to block on error (default: false).
    * When false, UI unblocks immediately after mutation completes (success or error).
@@ -49,7 +34,7 @@ interface MutationBlockingConfigWithoutError extends BaseMutationBlockingConfig 
  * Blocks during both pending and error states.
  * Can use different reasons for each state.
  */
-interface MutationBlockingConfigWithError extends BaseMutationBlockingConfig {
+interface MutationBlockingConfigWithError extends BaseBlockingConfig {
   /**
    * Whether to block on error.
    * When true, UI remains blocked if mutation fails until user dismisses the error.
