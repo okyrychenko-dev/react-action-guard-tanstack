@@ -1,6 +1,6 @@
 {
   "name": "@okyrychenko-dev/react-action-guard-tanstack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "TanStack Query integration for React Action Guard - seamless UI blocking for queries and mutations",
   "main": "./dist/index.js",
