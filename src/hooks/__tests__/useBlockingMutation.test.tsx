@@ -1,7 +1,7 @@
 import { uiBlockingStoreApi } from "@okyrychenko-dev/react-action-guard";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createWrapper } from "../../test/test.utils";
+import { actAsync, createWrapper } from "../../test/test.utils";
 import { useBlockingMutation } from "../useBlockingMutation";
 import { MutationBlockingConfig } from "../useBlockingMutation.types";
 
@@ -82,6 +82,45 @@ describe("useBlockingMutation", () => {
         expect(info[0]?.reason).toBe("Custom mutation message");
       }
     });
+  });
+
+  it("should remove blocker after timeout and call onTimeout", async () => {
+    const mutationFn = vi.fn().mockImplementation(() => new Promise(() => undefined));
+    const onTimeout = vi.fn();
+
+    const blockingConfig: MutationBlockingConfig = {
+      scope: "test",
+      timeout: 50,
+      onTimeout,
+    };
+
+    const { result } = renderHook(
+      () =>
+        useBlockingMutation({
+          mutationKey: ["save"],
+          mutationFn,
+          blockingConfig,
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    result.current.mutate(undefined);
+
+    await waitFor(() => {
+      const { isBlocked } = uiBlockingStoreApi.getState();
+      expect(isBlocked("test")).toBe(true);
+    });
+
+    await actAsync(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 75);
+      });
+    });
+
+    expect(onTimeout).toHaveBeenCalledTimes(1);
+    expect(onTimeout).toHaveBeenCalledWith('mutation-["save"]');
+    const { isBlocked } = uiBlockingStoreApi.getState();
+    expect(isBlocked("test")).toBe(false);
   });
 
   it("should use custom priority", async () => {

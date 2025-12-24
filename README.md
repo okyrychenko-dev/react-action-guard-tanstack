@@ -31,9 +31,9 @@ pnpm add @okyrychenko-dev/react-action-guard-tanstack @okyrychenko-dev/react-act
 
 This package requires the following peer dependencies:
 
-- [@okyrychenko-dev/react-action-guard](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard) ^0.3.0 - The core UI blocking library
+- [@okyrychenko-dev/react-action-guard](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard) ^0.5.1 - The core UI blocking library
 - [@tanstack/react-query](https://tanstack.com/query) ^5.0.0 - TanStack Query for data fetching
-- [React](https://react.dev/) ^17.0.0 || ^18.0.0
+- [React](https://react.dev/) ^17.0.0 || ^18.0.0 || ^19.0.0
 - [Zustand](https://zustand-demo.pmnd.rs/) - State management (peer dependency of react-action-guard)
 
 ## Quick Start
@@ -91,6 +91,8 @@ A wrapper around TanStack Query's `useQuery` that integrates with the UI blockin
     - `scope?: string | string[]` - Scope(s) to block
     - `reason?: string` - Default message (default: `'Loading data...'`)
     - `priority?: number` - Priority level (default: `10`)
+    - `timeout?: number` - Auto-remove blocker after N milliseconds
+    - `onTimeout?: (blockerId: string) => void` - Callback when blocker is auto-removed
     - `onLoading?: boolean` - Block during initial loading (default: `true`)
     - `onFetching?: boolean` - Block during background fetching (default: `false`)
     - `onError?: boolean` - Block when query fails (default: `false`)
@@ -133,6 +135,8 @@ A wrapper around TanStack Query's `useMutation` that integrates with the UI bloc
     - `scope?: string | string[]` - Scope(s) to block
     - `reason?: string` - Default message (default: `'Saving changes...'`)
     - `priority?: number` - Priority level (default: `30`)
+    - `timeout?: number` - Auto-remove blocker after N milliseconds
+    - `onTimeout?: (blockerId: string) => void` - Callback when blocker is auto-removed
     - `onError?: boolean` - Block when mutation fails (default: `false`)
     - `reasonOnPending?: string` - Message for pending state
     - `reasonOnError?: string` - Message for error state (requires `onError: true`)
@@ -172,6 +176,8 @@ A wrapper around TanStack Query's `useInfiniteQuery` that integrates with the UI
     - `scope?: string | string[]` - Scope(s) to block
     - `reason?: string` - Default message (default: `'Loading more data...'`)
     - `priority?: number` - Priority level (default: `10`)
+    - `timeout?: number` - Auto-remove blocker after N milliseconds
+    - `onTimeout?: (blockerId: string) => void` - Callback when blocker is auto-removed
     - `onLoading?: boolean` - Block during initial loading (default: `true`)
     - `onFetching?: boolean` - Block during fetching next/previous page (default: `false`)
     - `onError?: boolean` - Block when query fails (default: `false`)
@@ -229,6 +235,8 @@ A wrapper around TanStack Query's `useQueries` that integrates with the UI block
   - `scope?: string | string[]` - Scope(s) to block
   - `reason?: string` - Default message (default: `'Loading queries...'`)
   - `priority?: number` - Priority level (default: `10`)
+  - `timeout?: number` - Auto-remove blocker after N milliseconds
+  - `onTimeout?: (blockerId: string) => void` - Callback when blocker is auto-removed
   - `onLoading?: boolean` - Block when any query is loading (default: `true`)
   - `onFetching?: boolean` - Block when any query is fetching (default: `false`)
   - `onError?: boolean` - Block when any query fails (default: `false`)
@@ -361,7 +369,8 @@ function DataLoader() {
 ### Form Submission
 
 ```tsx
-import { useBlockingMutation, useIsBlocked } from '@okyrychenko-dev/react-action-guard-tanstack';
+import { useBlockingMutation } from '@okyrychenko-dev/react-action-guard-tanstack';
+import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
 
 function UserForm() {
   const mutation = useBlockingMutation({

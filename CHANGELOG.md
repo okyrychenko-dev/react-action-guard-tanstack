@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.2.3] - 2024-12-24
+
+### Changed
+
+- ⬆️ Updated peer dependency: `@okyrychenko-dev/react-action-guard` from `^0.5.0` to `^0.6.0`
+  - Compatible with new `updateBlocker` function for dynamic metadata updates
+  - Compatible with new middleware events (`clear`, `clear_scope`)
+  - Compatible with priority validation (negative values → 0)
+
+## [0.2.2] - 2024-12-17
+
+### Changed
+
+- ⬆️ Updated peer dependencies to support React 19
+  - React: `^17.0.0 || ^18.0.0 || ^19.0.0`
+
+### Added
+
+- ⏱️ Added `timeout` and `onTimeout` support in blocking config for all hooks
+
 ## [0.2.0] - 2025-01-30
 
 ### Added

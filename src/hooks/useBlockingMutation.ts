@@ -36,6 +36,8 @@ export function useBlockingMutation<
     reasonOnPending,
     reasonOnError,
     priority = 30,
+    timeout,
+    onTimeout,
     onError = false,
   } = blockingConfig;
 
@@ -56,6 +58,8 @@ export function useBlockingMutation<
       scope,
       reason: currentReason,
       priority,
+      timeout,
+      onTimeout,
     },
     [mutation.isPending, mutation.isError, mutation.status, blockingConfig]
   );

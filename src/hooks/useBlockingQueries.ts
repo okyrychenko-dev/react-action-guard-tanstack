@@ -40,6 +40,8 @@ export function useBlockingQueries<
     reasonOnFetching,
     reasonOnError,
     priority = 10,
+    timeout,
+    onTimeout,
     onLoading = true,
     onFetching = false,
     onError = false,
@@ -70,6 +72,8 @@ export function useBlockingQueries<
       scope,
       reason: currentReason,
       priority,
+      timeout,
+      onTimeout,
     },
     [results, blockingConfig]
   );

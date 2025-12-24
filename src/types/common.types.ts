@@ -18,6 +18,15 @@ export interface BaseBlockingConfig {
    * Can be overridden by specific state reasons.
    */
   reason?: string;
+  /**
+   * Automatically remove the blocker after N milliseconds.
+   * Useful for preventing stale blockers when requests hang.
+   */
+  timeout?: number;
+  /**
+   * Callback invoked when the blocker is automatically removed due to timeout.
+   */
+  onTimeout?: (blockerId: string) => void;
 }
 
 /**

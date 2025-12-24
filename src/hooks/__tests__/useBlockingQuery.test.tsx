@@ -1,7 +1,7 @@
 import { uiBlockingStoreApi } from "@okyrychenko-dev/react-action-guard";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createWrapper } from "../../test/test.utils";
+import { actAsync, createWrapper } from "../../test/test.utils";
 import { useBlockingQuery } from "../useBlockingQuery";
 import { QueryBlockingConfig } from "../useBlockingQuery.types";
 
@@ -48,6 +48,44 @@ describe("useBlockingQuery", () => {
       },
       { timeout: 2000 }
     );
+  });
+
+  it("should remove blocker after timeout and call onTimeout", async () => {
+    const queryFn = vi.fn().mockImplementation(() => new Promise(() => undefined));
+    const onTimeout = vi.fn();
+
+    const blockingConfig: QueryBlockingConfig = {
+      scope: "test",
+      onLoading: true,
+      timeout: 50,
+      onTimeout,
+    };
+
+    renderHook(
+      () =>
+        useBlockingQuery({
+          queryKey: ["test"],
+          queryFn,
+          blockingConfig,
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() => {
+      const { isBlocked } = uiBlockingStoreApi.getState();
+      expect(isBlocked("test")).toBe(true);
+    });
+
+    await actAsync(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 75);
+      });
+    });
+
+    expect(onTimeout).toHaveBeenCalledTimes(1);
+    expect(onTimeout).toHaveBeenCalledWith('query-["test"]');
+    const { isBlocked } = uiBlockingStoreApi.getState();
+    expect(isBlocked("test")).toBe(false);
   });
 
   it("should not block when onLoading is false", async () => {

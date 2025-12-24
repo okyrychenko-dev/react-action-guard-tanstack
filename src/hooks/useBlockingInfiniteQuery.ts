@@ -43,6 +43,8 @@ export function useBlockingInfiniteQuery<
     reasonOnFetching,
     reasonOnError,
     priority = 10,
+    timeout,
+    onTimeout,
     onLoading = true,
     onFetching = false,
     onError = false,
@@ -73,6 +75,8 @@ export function useBlockingInfiniteQuery<
       scope,
       reason: currentReason,
       priority,
+      timeout,
+      onTimeout,
     },
     [
       query.isLoading,

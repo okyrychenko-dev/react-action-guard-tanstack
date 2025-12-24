@@ -9,4 +9,8 @@ export interface UseBlockingManagerOptions {
   reason: string;
   /** Priority level for this blocker */
   priority: number;
+  /** Automatically remove the blocker after N milliseconds */
+  timeout?: number;
+  /** Callback invoked when the blocker is removed due to timeout */
+  onTimeout?: (blockerId: string) => void;
 }
