@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.4] - 2024-12-28
+
+### Documentation
+
+- 📚 **Comprehensive JSDoc examples** (14 total) demonstrating react-action-guard concepts
+  - `useBlockingQuery` (4): scope isolation, background refresh, error handling with retries, multi-scope coordination
+  - `useBlockingMutation` (4): multi-component coordination, priority system, error blocking during retries, whole-app coordination
+  - `useBlockingInfiniteQuery` (3): visual feedback with `useBlockingInfo`, initial vs pagination blocking, scope isolation
+  - `useBlockingQueries` (3): parallel coordination blocking all queries, dynamic query arrays, critical app initialization
+- 🎯 **All examples demonstrate react-action-guard value**:
+  - `useIsBlocked` / `useBlockingInfo` usage in separate components
+  - Scope-based isolation and multi-component coordination
+  - Priority-based blocking resolution
+  - No prop drilling patterns
+- 📖 **README enhancements**:
+  - Added "React-Action-Guard Concepts" section explaining scope isolation, useIsBlocked/useBlockingInfo, multi-component coordination, priority system
+  - All sections now show library benefits over vanilla TanStack Query
+- 📝 **Documentation improvements** in manual docs with concept-focused examples
+
 ## [0.2.3] - 2024-12-24
 
 ### Changed
