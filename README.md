@@ -31,7 +31,7 @@ pnpm add @okyrychenko-dev/react-action-guard-tanstack @okyrychenko-dev/react-act
 
 This package requires the following peer dependencies:
 
-- [@okyrychenko-dev/react-action-guard](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard) ^0.5.1 - The core UI blocking library
+- [@okyrychenko-dev/react-action-guard](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard) ^0.6.0 - The core UI blocking library
 - [@tanstack/react-query](https://tanstack.com/query) ^5.0.0 - TanStack Query for data fetching
 - [React](https://react.dev/) ^17.0.0 || ^18.0.0 || ^19.0.0
 - [Zustand](https://zustand-demo.pmnd.rs/) - State management (peer dependency of react-action-guard)
@@ -344,6 +344,122 @@ const mutation = useBlockingMutation<
     reasonOnPending: 'Creating user...',
   }
 });
+```
+
+## React-Action-Guard Concepts
+
+This package integrates TanStack Query with React-Action-Guard's powerful scope-based UI blocking system. Here are the key concepts:
+
+### Scope Isolation
+
+Different parts of your UI can block independently via scopes:
+
+```tsx
+import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
+
+// Query blocks 'users-table' scope
+function UserTableLoader() {
+  useBlockingQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+    blockingConfig: { scope: 'users-table' }
+  });
+}
+
+// Table checks its scope
+function UserTable() {
+  const isBlocked = useIsBlocked('users-table');
+  // Blocked during query load
+}
+
+// Sidebar has different scope - stays interactive
+function Sidebar() {
+  const isBlocked = useIsBlocked('sidebar');
+  // isBlocked === false ✅
+}
+```
+
+### useIsBlocked & useBlockingInfo
+
+React to blocking state from any component:
+
+```tsx
+import { useIsBlocked, useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
+
+// Anywhere in your app
+function StatusBar() {
+  const blockers = useBlockingInfo('dashboard');
+  
+  if (blockers.length > 0) {
+    return <div>{blockers[0].reason}</div>; // "Loading dashboard..."
+  }
+  return null;
+}
+
+function SaveButton() {
+  const isBlocked = useIsBlocked('checkout');
+  return <button disabled={isBlocked}>Proceed</button>;
+}
+```
+
+### Multi-Component Coordination
+
+One query/mutation coordinates many components automatically:
+
+```tsx
+// Component A: Sets blocking
+function SaveData() {
+  const mutation = useBlockingMutation({
+    mutationFn: saveData,
+    blockingConfig: { scope: 'edit-mode' }
+  });
+}
+
+// Components B, C, D: All react automatically
+function FormInputs() {
+  const isBlocked = useIsBlocked('edit-mode');
+  // Inputs disabled during save
+}
+
+function CancelButton() {
+  const isBlocked = useIsBlocked('edit-mode');
+  // Button disabled during save
+}
+
+function NavigationLinks() {
+  const isBlocked = useIsBlocked('edit-mode');
+  // Navigation blocked during save
+}
+
+// No prop drilling! No context! Just scope-based coordination 🎯
+```
+
+### Priority System
+
+Higher priority blockers override lower ones:
+
+```tsx
+// Mutation default priority: 30 (higher than queries: 10)
+const paymentMutation = useBlockingMutation({
+  mutationFn: processPayment,
+  blockingConfig: {
+    scope: 'checkout',
+    priority: 100, // Highest
+  }
+});
+
+const query = useBlockingQuery({
+  queryKey: ['cart'],
+  queryFn: fetchCart,
+  blockingConfig: {
+    scope: 'checkout',
+    priority: 50, // Lower - won't block if payment is processing
+  }
+});
+
+// Only highest priority blocker's reason is shown
+const blockers = useBlockingInfo('checkout');
+const topReason = blockers[0]?.reason; // From priority 100
 ```
 
 ## Use Cases
