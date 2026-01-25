@@ -48,7 +48,7 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  * Visual feedback - distinguish initial load vs "load more"
  * ```ts
  * import { useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function InfinitePostFeed() {
  *   const query = useBlockingInfiniteQuery({
  *     queryKey: ['posts'],
@@ -63,21 +63,21 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  *       onFetching: false, // Don't block "load more" ✅
  *     }
  *   });
- *   
+ *
  *   const blockers = useBlockingInfo('posts-feed');
  *   const isInitialLoad = blockers.length > 0;
- *   
+ *
  *   if (isInitialLoad) {
  *     // blockers[0].reason === "Loading posts..."
  *     // Show full-page skeleton
  *     return null;
  *   }
- *   
+ *
  *   // Background pagination:
  *   // - blockers.length === 0
  *   // - query.isFetchingNextPage === true
  *   // Show inline "Load more..." button instead of blocking
- *   
+ *
  *   return null;
  * }
  * ```
@@ -86,7 +86,7 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  * Block all pages - critical data loading
  * ```ts
  * import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function AuditLogViewer() {
  *   const query = useBlockingInfiniteQuery({
  *     queryKey: ['audit-logs'],
@@ -102,16 +102,16 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  *       priority: 60,
  *     }
  *   });
- *   
+ *
  *   const isBlocked = useIsBlocked('audit-logs');
- *   
+ *
  *   // isBlocked === true during BOTH:
  *   // 1. Initial load
  *   // 2. Every "load more" click
- *   // 
+ *   //
  *   // Use when each page is critical and shouldn't allow
  *   // user actions while loading
- *   
+ *
  *   return null;
  * }
  * ```
@@ -120,7 +120,7 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  * Scope isolation - infinite scroll doesn't block unrelated UI
  * ```ts
  * import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function ProductCatalog() {
  *   const query = useBlockingInfiniteQuery({
  *     queryKey: ['products'],
@@ -136,21 +136,21 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  *   });
  *   return null;
  * }
- * 
+ *
  * // Product list is blocked during initial load
  * function ProductGrid() {
  *   const isBlocked = useIsBlocked('product-list');
  *   // isBlocked === true only during first page
  *   return null;
  * }
- * 
+ *
  * // Filters remain interactive (different scope)
  * function ProductFilters() {
  *   const isBlocked = useIsBlocked('filters');
  *   // isBlocked === false - filters always work! ✅
  *   return null;
  * }
- * 
+ *
  * // Cart stays functional (different scope)
  * function ShoppingCart() {
  *   const isBlocked = useIsBlocked('cart');

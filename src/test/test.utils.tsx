@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act } from "@testing-library/react";
-import { JSX, ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 
 /**
  * Helper to execute an async function with proper act() wrapping
@@ -22,7 +22,7 @@ export function createWrapper() {
     },
   });
 
-  return function ({ children }: { children: ReactNode }): JSX.Element {
+  return function ({ children }: { children: ReactNode }): ReactElement {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
   };
 }

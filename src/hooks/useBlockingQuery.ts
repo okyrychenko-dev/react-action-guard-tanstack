@@ -21,7 +21,7 @@ import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
  * Scope isolation - independent UI sections
  * ```ts
  * import { useIsBlocked, useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * // Component A: Loads data for table
  * function UserTableLoader() {
  *   useBlockingQuery({
@@ -34,19 +34,19 @@ import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
  *   });
  *   return null;
  * }
- * 
+ *
  * // Component B: Table checks its scope
  * function UserTable() {
  *   const isBlocked = useIsBlocked('users-table');
  *   const blockers = useBlockingInfo('users-table');
- *   
+ *
  *   if (isBlocked) {
  *     // Show: "Loading users..." from blockers[0].reason
  *     return null;
  *   }
  *   return null; // render table
  * }
- * 
+ *
  * // Component C: Sidebar is independent
  * function Sidebar() {
  *   const isBlocked = useIsBlocked('sidebar');
@@ -59,7 +59,7 @@ import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
  * Background refresh - don't block UI updates
  * ```ts
  * import { useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function LiveDashboard()  {
  *   const query = useBlockingQuery({
  *     queryKey: ['metrics'],
@@ -73,13 +73,13 @@ import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
  *       onFetching: false, // Don't block refresh ✅
  *     }
  *   });
- *   
+ *
  *   const blockers = useBlockingInfo('dashboard');
- *   
+ *
  *   // Initial load: blockers.length > 0, show full loading
  *   // Background refresh: blockers.length === 0, show subtle indicator
  *   // This prevents janky UI during auto-updates
- *   
+ *
  *   return null;
  * }
  * ```
@@ -88,7 +88,7 @@ import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
  * Error handling - keep blocking during retries
  * ```ts
  * import { useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function CriticalDataLoader() {
  *   const query = useBlockingQuery({
  *     queryKey: ['critical-config'],
@@ -104,13 +104,13 @@ import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
  *       priority: 100,
  *     }
  *   });
- *   
+ *
  *   const blockers = useBlockingInfo('app-init');
- *   
+ *
  *   // During retry:
  *   // blockers[0].reason === "Config failed, retrying..."
  *   // User sees what's happening, not just stuck
- *   
+ *
  *   return null;
  * }
  * ```
@@ -119,7 +119,7 @@ import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
  * Multiple scopes - coordinate across app
  * ```ts
  * import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function CheckoutDataLoader() {
  *   useBlockingQuery({
  *     queryKey: ['checkout-session'],
@@ -133,26 +133,26 @@ import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
  *   });
  *   return null;
  * }
- * 
+ *
  * // Different components check different scopes
  * function CheckoutForm() {
  *   const isBlocked = useIsBlocked('forms');
  *   // Forms disabled during checkout load
  *   return null;
  * }
- * 
+ *
  * function NavigationBar() {
  *   const isBlocked = useIsBlocked('navigation');
  *   // Navigation locked during checkout load
  *   return null;
  * }
- * 
+ *
  * function PaymentSection() {
  *   const isBlocked = useIsBlocked('checkout');
  *   // Entire checkout blocked
  *   return null;
  * }
- * 
+ *
  * // All synchronized via scope array! 🎯
  * ```
  *

@@ -40,7 +40,7 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  * Multi-component coordination - one mutation, many reactions
  * ```ts
  * import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * // Component A: Mutation triggers blocking
  * function SaveButton() {
  *   const mutation = useBlockingMutation({
@@ -51,30 +51,30 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  *       priority: 50,
  *     }
  *   });
- *   
+ *
  *   // mutation.mutate(data) blocks 'user-edit' scope
  *   return null;
  * }
- * 
+ *
  * // Components B, C, D all react automatically
  * function FormInputs() {
  *   const isBlocked = useIsBlocked('user-edit');
  *   // Disable all inputs during save
  *   return null;
  * }
- * 
+ *
  * function CancelButton() {
  *   const isBlocked = useIsBlocked('user-edit');
  *   // Disable cancel during save
  *   return null;
  * }
- * 
+ *
  * function NavigationWarning() {
  *   const isBlocked = useIsBlocked('user-edit');
  *   // Show "Save in progress..." if user tries to navigate
  *   return null;
  * }
- * 
+ *
  * // No prop drilling needed! 🎯
  * ```
  *
@@ -82,7 +82,7 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  * Priority system - mutations block with higher priority
  * ```ts
  * import { useIsBlocked, useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * // Mutation default priority: 30 (higher than queries: 10)
  * function ProcessPayment() {
  *   const mutation = useBlockingMutation({
@@ -95,7 +95,7 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  *   });
  *   return null;
  * }
- * 
+ *
  * // Even high-priority queries are blocked
  * function LoadCheckoutData() {
  *   const query = useBlockingQuery({
@@ -109,15 +109,15 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  *   // Query won't block if payment is processing
  *   return null;
  * }
- * 
+ *
  * // Check which blocker is active
  * function StatusDisplay() {
  *   const blockers = useBlockingInfo('checkout');
  *   const topBlocker = blockers[0]; // Sorted by priority
- *   
+ *
  *   // topBlocker.reason === "Processing payment..." (priority 100)
  *   // Lower priority blockers are hidden
- *   
+ *
  *   return null;
  * }
  * ```
@@ -126,7 +126,7 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  * Error handling - block during retries
  * ```ts
  * import { useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function CriticalUpdate() {
  *   const mutation = useBlockingMutation({
  *     mutationFn: updateCriticalData,
@@ -142,10 +142,10 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  *   });
  *   return null;
  * }
- * 
+ *
  * function UpdateStatus() {
  *   const blockers = useBlockingInfo('critical-update');
- *   
+ *
  *   if (blockers.length > 0) {
  *     // Shows "Updating..." then "Update failed, retrying..."
  *     // User understands what's happening vs stuck UI
@@ -159,7 +159,7 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  * Multiple scopes - coordinate entire app during critical operation
  * ```ts
  * import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function CheckoutSubmit() {
  *   const mutation = useBlockingMutation({
  *     mutationFn: submitOrder,
@@ -173,26 +173,26 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  *   });
  *   return null;
  * }
- * 
+ *
  * // Different parts of app check their relevant scopes
  * function Header() {
  *   const navBlocked = useIsBlocked('navigation');
  *   // Disable all navigation
  *   return null;
  * }
- * 
+ *
  * function SideCart() {
  *   const actionsBlocked = useIsBlocked('actions');
  *   // Disable cart modifications
  *   return null;
  * }
- * 
+ *
  * function CheckoutForm() {
  *   const formsBlocked = useIsBlocked('forms');
  *   // Disable all form inputs
  *   return null;
  * }
- * 
+ *
  * // One mutation coordinates entire app! 🎯
  * ```
  *

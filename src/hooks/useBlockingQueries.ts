@@ -40,7 +40,7 @@ import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBloc
  * Parallel coordination - block until ALL queries ready
  * ```ts
  * import { useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function DashboardDataLoader() {
  *   // Load 3 data sources in parallel
  *   const queries = useBlockingQueries(
@@ -57,18 +57,18 @@ import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBloc
  *   );
  *   return null;
  * }
- * 
+ *
  * // Dashboard UI reacts to ALL queries
  * function Dashboard() {
  *   const blockers = useBlockingInfo('dashboard');
- *   
+ *
  *   if (blockers.length > 0) {
  *     // blockers[0].reason === "Loading dashboard..."
  *     // Blocked until ALL 3 queries complete
  *     // Show full dashboard skeleton
  *     return null;
  *   }
- *   
+ *
  *   // All data ready - render full dashboard
  *   return null;
  * }
@@ -78,7 +78,7 @@ import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBloc
  * Dynamic query arrays - coordinate changing data sources
  * ```ts
  * import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function MultiCategoryView({ categoryIds }: { categoryIds: string[] }) {
  *   // Number of queries changes dynamically
  *   const queries = useBlockingQueries(
@@ -91,17 +91,17 @@ import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBloc
  *       reasonOnLoading: `Loading ${categoryIds.length} categories...`,
  *     }
  *   );
- *   
+ *
  *   return null;
  * }
- * 
+ *
  * // UI reacts to ANY category loading
  * function CategoryGrid() {
  *   const isBlocked = useIsBlocked('categories');
- *   
+ *
  *   // isBlocked === true if ANY category is loading
  *   // Coordinated loading state for dynamic data
- *   
+ *
  *   return null;
  * }
  * ```
@@ -110,7 +110,7 @@ import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBloc
  * Critical initialization - high priority app startup
  * ```ts
  * import { useIsBlocked, useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
- * 
+ *
  * function AppBootstrap() {
  *   const queries = useBlockingQueries(
  *     [
@@ -127,29 +127,29 @@ import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBloc
  *   );
  *   return null;
  * }
- * 
+ *
  * // Entire app is blocked during initialization
  * function App() {
  *   const blockers = useBlockingInfo('global');
- *   
+ *
  *   if (blockers.length > 0) {
  *     // Show app-wide loading screen
  *     // blockers[0].reason === "Initializing application..."
  *     return null;
  *   }
- *   
+ *
  *   // All critical data loaded - render app
  *   return null;
  * }
- * 
+ *
  * // Individual features check app-init
  * function FeaturePanel() {
  *   const isReady = useIsBlocked('app-init');
- *   
+ *
  *   if (isReady) {
  *     return null; // Wait for init
  *   }
- *   
+ *
  *   return null; // Render feature
  * }
  * ```
