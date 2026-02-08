@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- 🛡️ Fixed blocker ID collisions for `useBlockingQuery` and `useBlockingMutation` when multiple hook instances used the same key.
+- 🧹 Fixed premature blocker removal on unmount in same-key multi-instance scenarios.
+
+### Changed
+
+- 🔑 `blockerId` generation now includes per-instance identity for query/mutation hooks (same key no longer implies shared blocker ID).
+- ♻️ Simplified `useBlockingManager` effect lifecycle to reduce unnecessary remove/add churn from unstable external dependencies.
+- ⬆️ Synced local dev dependency `@okyrychenko-dev/react-action-guard` to `^0.7.0` (matches peer dependency).
+
 ## [0.3.0] - 2026-01-25
 
 ### Breaking Changes

@@ -238,18 +238,15 @@ export function useBlockingMutation<
     ],
   });
 
-  useBlockingManager(
-    {
-      blockerId,
-      shouldBlock,
-      scope,
-      reason: currentReason,
-      priority,
-      timeout,
-      onTimeout,
-    },
-    [mutation.isPending, mutation.isError, mutation.status, blockingConfig]
-  );
+  useBlockingManager({
+    blockerId,
+    shouldBlock,
+    scope,
+    reason: currentReason,
+    priority,
+    timeout,
+    onTimeout,
+  });
 
   return mutation;
 }

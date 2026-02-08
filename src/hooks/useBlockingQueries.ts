@@ -208,18 +208,15 @@ export function useBlockingQueries<
     ],
   });
 
-  useBlockingManager(
-    {
-      blockerId,
-      shouldBlock,
-      scope,
-      reason: currentReason,
-      priority,
-      timeout,
-      onTimeout,
-    },
-    [results, blockingConfig]
-  );
+  useBlockingManager({
+    blockerId,
+    shouldBlock,
+    scope,
+    reason: currentReason,
+    priority,
+    timeout,
+    onTimeout,
+  });
 
   return results;
 }

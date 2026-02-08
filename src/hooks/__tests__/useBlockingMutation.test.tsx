@@ -118,7 +118,9 @@ describe("useBlockingMutation", () => {
     });
 
     expect(onTimeout).toHaveBeenCalledTimes(1);
-    expect(onTimeout).toHaveBeenCalledWith('mutation-["save"]');
+    const timedOutId = onTimeout.mock.calls[0]?.[0];
+    expect(typeof timedOutId).toBe("string");
+    expect(timedOutId).toContain('mutation-["save"]-');
     const { isBlocked } = uiBlockingStoreApi.getState();
     expect(isBlocked("test")).toBe(false);
   });
@@ -861,7 +863,7 @@ describe("useBlockingMutation", () => {
     expect(info[0]?.reason).toBe("Error occurred while saving");
   });
 
-  it("should use deterministic blockerId when mutationKey is provided", async () => {
+  it("should create isolated blockerIds for same mutationKey", async () => {
     const mutationFn = vi.fn().mockImplementation(
       () =>
         new Promise((resolve) => {
@@ -900,10 +902,55 @@ describe("useBlockingMutation", () => {
     await waitFor(() => {
       const { getBlockingInfo } = uiBlockingStoreApi.getState();
       const info = getBlockingInfo("test");
-      // Both mutations with same key should share blocker ID
-      // So we should only have 1 blocker (not 2)
-      expect(info.length).toBe(1);
+      // Same mutationKey still creates per-instance blocker IDs
+      expect(info.length).toBe(2);
     });
+  });
+
+  it("should keep blocker active when one of same-key mutations unmounts", async () => {
+    const mutationFn = vi.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve("data"), 100);
+        })
+    );
+
+    const blockingConfig: MutationBlockingConfig = {
+      scope: "test",
+    };
+
+    const first = renderHook(
+      () =>
+        useBlockingMutation({
+          mutationFn,
+          mutationKey: ["saveUser", 123],
+          blockingConfig,
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    const second = renderHook(
+      () =>
+        useBlockingMutation({
+          mutationFn,
+          mutationKey: ["saveUser", 123],
+          blockingConfig,
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    first.result.current.mutate(undefined);
+    second.result.current.mutate(undefined);
+
+    await waitFor(() => {
+      const { isBlocked } = uiBlockingStoreApi.getState();
+      expect(isBlocked("test")).toBe(true);
+    });
+
+    first.unmount();
+
+    const { isBlocked } = uiBlockingStoreApi.getState();
+    expect(isBlocked("test")).toBe(true);
   });
 
   it("should use different blockerIds for different mutationKeys", async () => {

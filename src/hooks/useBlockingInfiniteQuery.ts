@@ -213,29 +213,15 @@ export function useBlockingInfiniteQuery<
     ],
   });
 
-  useBlockingManager(
-    {
-      blockerId,
-      shouldBlock,
-      scope,
-      reason: currentReason,
-      priority,
-      timeout,
-      onTimeout,
-    },
-    [
-      query.isLoading,
-      query.isFetching,
-      query.isFetchingNextPage,
-      query.isFetchingPreviousPage,
-      query.isError,
-      query.status,
-      query.hasNextPage,
-      query.hasPreviousPage,
-      blockingConfig,
-      options.queryKey,
-    ]
-  );
+  useBlockingManager({
+    blockerId,
+    shouldBlock,
+    scope,
+    reason: currentReason,
+    priority,
+    timeout,
+    onTimeout,
+  });
 
   return query;
 }

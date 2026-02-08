@@ -198,26 +198,15 @@ export function useBlockingQuery<
     ],
   });
 
-  useBlockingManager(
-    {
-      blockerId,
-      shouldBlock,
-      scope,
-      reason: currentReason,
-      priority,
-      timeout,
-      onTimeout,
-    },
-    [
-      query.isLoading,
-      query.isFetching,
-      query.isError,
-      query.status,
-      query.dataUpdatedAt,
-      blockingConfig,
-      options.queryKey,
-    ]
-  );
+  useBlockingManager({
+    blockerId,
+    shouldBlock,
+    scope,
+    reason: currentReason,
+    priority,
+    timeout,
+    onTimeout,
+  });
 
   return query;
 }

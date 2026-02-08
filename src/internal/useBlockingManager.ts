@@ -1,5 +1,5 @@
 import { useUIBlockingStore } from "@okyrychenko-dev/react-action-guard";
-import { type DependencyList, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { UseBlockingManagerOptions } from "./useBlockingManager.types";
 
 /**
@@ -10,10 +10,8 @@ import { UseBlockingManagerOptions } from "./useBlockingManager.types";
  * - Adding/removing blockers based on shouldBlock condition
  * - Automatic cleanup on unmount
  * - Dependency tracking for re-evaluation
- * - Race condition protection for rapid state changes
  *
  * @param options - Configuration for blocker management
- * @param deps - Dependency array for the effect (similar to useEffect)
  */
 export function useBlockingManager(
   {
@@ -24,8 +22,7 @@ export function useBlockingManager(
     priority,
     timeout,
     onTimeout,
-  }: UseBlockingManagerOptions,
-  deps: DependencyList
+  }: UseBlockingManagerOptions
 ): void {
   const { addBlocker, updateBlocker, removeBlocker } = useUIBlockingStore((state) => ({
     addBlocker: state.addBlocker,
@@ -35,12 +32,8 @@ export function useBlockingManager(
 
   // Track if blocker was added in the current effect lifecycle
   const wasBlockedRef = useRef(false);
-  // Track if effect is still mounted to prevent race conditions
-  const isMountedRef = useRef(true);
 
   useEffect(() => {
-    isMountedRef.current = true;
-
     if (shouldBlock) {
       if (wasBlockedRef.current) {
         updateBlocker(blockerId, { scope, reason, priority });
@@ -54,7 +47,6 @@ export function useBlockingManager(
     }
 
     return () => {
-      isMountedRef.current = false;
       if (wasBlockedRef.current) {
         removeBlocker(blockerId);
         wasBlockedRef.current = false;
@@ -71,6 +63,5 @@ export function useBlockingManager(
     shouldBlock,
     timeout,
     onTimeout,
-    ...deps,
   ]);
 }

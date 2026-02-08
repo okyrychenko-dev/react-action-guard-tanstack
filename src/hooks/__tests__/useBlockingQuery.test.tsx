@@ -83,7 +83,9 @@ describe("useBlockingQuery", () => {
     });
 
     expect(onTimeout).toHaveBeenCalledTimes(1);
-    expect(onTimeout).toHaveBeenCalledWith('query-["test"]');
+    const timedOutId = onTimeout.mock.calls[0]?.[0];
+    expect(typeof timedOutId).toBe("string");
+    expect(timedOutId).toContain('query-["test"]-');
     const { isBlocked } = uiBlockingStoreApi.getState();
     expect(isBlocked("test")).toBe(false);
   });
@@ -323,6 +325,52 @@ describe("useBlockingQuery", () => {
       // Both queries should create separate blockers
       expect(info.length).toBe(2);
     });
+  });
+
+  it("should keep blocker active when one of same-key queries unmounts", async () => {
+    const queryFn = vi.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve("data"), 100);
+        })
+    );
+
+    const blockingConfig: QueryBlockingConfig = {
+      scope: "test",
+      onLoading: true,
+    };
+
+    const first = renderHook(
+      () =>
+        useBlockingQuery({
+          queryKey: ["test", "same"],
+          queryFn,
+          blockingConfig,
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    const second = renderHook(
+      () =>
+        useBlockingQuery({
+          queryKey: ["test", "same"],
+          queryFn,
+          blockingConfig,
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() => {
+      const { isBlocked } = uiBlockingStoreApi.getState();
+      expect(isBlocked("test")).toBe(true);
+    });
+
+    first.unmount();
+
+    const { isBlocked } = uiBlockingStoreApi.getState();
+    expect(isBlocked("test")).toBe(true);
+
+    second.unmount();
   });
 
   it("should return the same result as useQuery", async () => {

@@ -462,6 +462,14 @@ const blockers = useBlockingInfo('checkout');
 const topReason = blockers[0]?.reason; // From priority 100
 ```
 
+### Blocker ID Behavior
+
+`blockerId` (including the value passed to `onTimeout`) should be treated as an opaque identifier.
+
+- For query/mutation hooks, IDs are unique per hook instance.
+- Same `queryKey`/`mutationKey` in two mounted components now creates two independent blockers.
+- Unmounting one instance does not remove another instance's blocker.
+
 ## Use Cases
 
 ### Loading States
