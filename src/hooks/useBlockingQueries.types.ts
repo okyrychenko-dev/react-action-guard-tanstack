@@ -1,4 +1,4 @@
-import type { QueriesOptions, QueryKey, UseQueryOptions } from "@tanstack/react-query";
+import type { DefaultError, QueriesOptions, QueryKey, UseQueryOptions } from "@tanstack/react-query";
 import type { BaseBlockingConfig } from "../types";
 
 /**
@@ -49,7 +49,7 @@ export interface QueriesBlockingConfig extends BaseBlockingConfig {
  */
 export type UseBlockingQueriesOptions<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 > = UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>;

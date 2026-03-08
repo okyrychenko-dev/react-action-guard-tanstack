@@ -1,6 +1,8 @@
 import {
+  type DefaultError,
   type DefinedUseQueryResult,
   type NoInfer,
+  type QueryClient,
   type QueryKey,
   type UseQueryResult,
   useQuery,
@@ -169,32 +171,35 @@ import type {
  */
 export function useBlockingQuery<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
-  options: DefinedInitialDataBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>
+  options: DefinedInitialDataBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
+  queryClient?: QueryClient
 ): DefinedUseQueryResult<NoInfer<TData>, TError>;
 
 export function useBlockingQuery<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
-  options: UndefinedInitialDataBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>
+  options: UndefinedInitialDataBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
+  queryClient?: QueryClient
 ): UseQueryResult<NoInfer<TData>, TError>;
 
 export function useBlockingQuery<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
-  options: UseBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>
+  options: UseBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
+  queryClient?: QueryClient
 ): UseQueryResult<NoInfer<TData>, TError> {
   const { blockingConfig, ...queryOptions } = options;
-  const query = useQuery(queryOptions);
+  const query = useQuery(queryOptions, queryClient);
 
   const blockerId = useQueryBlockerId("query", options.queryKey);
 

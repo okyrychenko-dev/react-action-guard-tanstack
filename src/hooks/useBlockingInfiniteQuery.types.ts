@@ -1,5 +1,6 @@
 import type { BaseBlockingConfig } from "../types";
 import type {
+  DefaultError,
   DefinedInitialDataInfiniteOptions,
   InfiniteData,
   QueryKey,
@@ -56,7 +57,7 @@ export interface InfiniteQueryBlockingConfig extends BaseBlockingConfig {
  */
 export interface UseBlockingInfiniteQueryOptions<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = InfiniteData<TQueryFnData>,
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,
@@ -73,7 +74,7 @@ type BlockingInfiniteQueryConfig = {
 
 export type UndefinedInitialDataBlockingInfiniteQueryOptions<
   TQueryFnData,
-  TError = Error,
+  TError = DefaultError,
   TData = InfiniteData<TQueryFnData>,
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,
@@ -88,7 +89,7 @@ export type UndefinedInitialDataBlockingInfiniteQueryOptions<
 
 export type DefinedInitialDataBlockingInfiniteQueryOptions<
   TQueryFnData,
-  TError = Error,
+  TError = DefaultError,
   TData = InfiniteData<TQueryFnData>,
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,

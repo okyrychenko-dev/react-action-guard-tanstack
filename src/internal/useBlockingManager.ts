@@ -1,4 +1,4 @@
-import { useUIBlockingStore } from "@okyrychenko-dev/react-action-guard";
+import { uiBlockingStoreApi } from "@okyrychenko-dev/react-action-guard";
 import { useEffect, useRef } from "react";
 import { UseBlockingManagerOptions } from "./useBlockingManager.types";
 
@@ -24,11 +24,7 @@ export function useBlockingManager(
     onTimeout,
   }: UseBlockingManagerOptions
 ): void {
-  const { addBlocker, updateBlocker, removeBlocker } = useUIBlockingStore((state) => ({
-    addBlocker: state.addBlocker,
-    updateBlocker: state.updateBlocker,
-    removeBlocker: state.removeBlocker,
-  }));
+  const { addBlocker, updateBlocker, removeBlocker } = uiBlockingStoreApi.getState();
 
   // Track whether this hook instance currently owns an active blocker.
   const isRegisteredRef = useRef(false);

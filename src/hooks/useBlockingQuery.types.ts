@@ -1,5 +1,6 @@
 import type { BaseBlockingConfig } from "../types";
 import type {
+  DefaultError,
   DefinedInitialDataOptions,
   QueryKey,
   UndefinedInitialDataOptions,
@@ -54,7 +55,7 @@ export interface QueryBlockingConfig extends BaseBlockingConfig {
  */
 export interface UseBlockingQueryOptions<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 > extends UseQueryOptions<TQueryFnData, TError, TData, TQueryKey> {
@@ -70,14 +71,14 @@ type BlockingQueryConfig = {
 
 export type UndefinedInitialDataBlockingQueryOptions<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 > = UndefinedInitialDataOptions<TQueryFnData, TError, TData, TQueryKey> & BlockingQueryConfig;
 
 export type DefinedInitialDataBlockingQueryOptions<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 > = DefinedInitialDataOptions<TQueryFnData, TError, TData, TQueryKey> & BlockingQueryConfig;

@@ -1,4 +1,4 @@
-import { type QueriesResults, useQueries } from "@tanstack/react-query";
+import { type QueryClient, type QueriesResults, useQueries } from "@tanstack/react-query";
 import { useBlockingManager, useRandomBlockerId } from "../internal";
 import { resolveBlockingReason } from "../utils";
 import type { BlockingQueriesInput, QueriesBlockingConfig } from "./useBlockingQueries.types";
@@ -165,11 +165,12 @@ export function useBlockingQueries<
   T extends unknown[],
 >(
   queries: BlockingQueriesInput<T>,
-  blockingConfig: QueriesBlockingConfig
+  blockingConfig: QueriesBlockingConfig,
+  queryClient?: QueryClient
 ): QueriesResults<T> {
   const results = useQueries({
     queries,
-  });
+  }, queryClient);
 
   const blockerId = useRandomBlockerId();
 

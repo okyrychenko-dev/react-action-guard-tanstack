@@ -1,4 +1,9 @@
-import { type UseMutationResult, useMutation } from "@tanstack/react-query";
+import {
+  type DefaultError,
+  type QueryClient,
+  type UseMutationResult,
+  useMutation,
+} from "@tanstack/react-query";
 import { useBlockingManager, useMutationBlockerId } from "../internal";
 import { resolveBlockingReason } from "../utils";
 import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
@@ -206,14 +211,15 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  */
 export function useBlockingMutation<
   TData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TVariables = void,
   TOnMutateResult = unknown,
 >(
-  options: UseBlockingMutationOptions<TData, TError, TVariables, TOnMutateResult>
+  options: UseBlockingMutationOptions<TData, TError, TVariables, TOnMutateResult>,
+  queryClient?: QueryClient
 ): UseMutationResult<TData, TError, TVariables, TOnMutateResult> {
   const { blockingConfig, mutationKey, ...mutationOptions } = options;
-  const mutation = useMutation({ mutationKey, ...mutationOptions });
+  const mutation = useMutation({ mutationKey, ...mutationOptions }, queryClient);
 
   const blockerId = useMutationBlockerId("mutation", mutationKey);
 

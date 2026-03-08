@@ -306,6 +306,8 @@ Type fidelity is intentionally close to native TanStack Query behavior:
 - `useBlockingInfiniteQuery` preserves infinite-query result typing
 - `useBlockingMutation` preserves mutation result and variable inference
 - `useBlockingQueries` preserves tuple inference for mixed query arrays
+- wrapper defaults follow TanStack Query's `DefaultError`
+- all wrappers accept the optional `queryClient` parameter, like the native hooks
 
 ```typescript
 import type {
@@ -362,6 +364,7 @@ Blocker synchronization is designed to stay stable across rerenders.
 - Inline `blockingConfig` objects update the existing blocker instead of causing remove/add churn
 - Cleanup is safe under React `StrictMode`
 - Query and mutation blocker IDs stay unique per hook instance, even when keys match
+- blocker management reads store actions directly, avoiding unnecessary rerenders from store subscriptions
 
 ## React-Action-Guard Concepts
 

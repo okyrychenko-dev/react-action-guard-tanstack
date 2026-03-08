@@ -1,4 +1,4 @@
-import { UseMutationOptions } from "@tanstack/react-query";
+import type { DefaultError, UseMutationOptions } from "@tanstack/react-query";
 import type { BaseBlockingConfig } from "../types";
 
 /**
@@ -79,7 +79,7 @@ export type MutationBlockingConfig =
  */
 export interface UseBlockingMutationOptions<
   TData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TVariables = void,
   TOnMutateResult = unknown,
 > extends UseMutationOptions<TData, TError, TVariables, TOnMutateResult> {

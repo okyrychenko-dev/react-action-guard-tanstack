@@ -1,6 +1,8 @@
 import {
+  type DefaultError,
   type DefinedUseInfiniteQueryResult,
   type InfiniteData,
+  type QueryClient,
   type QueryKey,
   type UseInfiniteQueryResult,
   useInfiniteQuery,
@@ -175,7 +177,7 @@ import type {
  */
 export function useBlockingInfiniteQuery<
   TQueryFnData,
-  TError = Error,
+  TError = DefaultError,
   TData = InfiniteData<TQueryFnData>,
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,
@@ -186,12 +188,13 @@ export function useBlockingInfiniteQuery<
     TData,
     TQueryKey,
     TPageParam
-  >
+  >,
+  queryClient?: QueryClient
 ): DefinedUseInfiniteQueryResult<TData, TError>;
 
 export function useBlockingInfiniteQuery<
   TQueryFnData,
-  TError = Error,
+  TError = DefaultError,
   TData = InfiniteData<TQueryFnData>,
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,
@@ -202,20 +205,22 @@ export function useBlockingInfiniteQuery<
     TData,
     TQueryKey,
     TPageParam
-  >
+  >,
+  queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError>;
 
 export function useBlockingInfiniteQuery<
   TQueryFnData = unknown,
-  TError = Error,
+  TError = DefaultError,
   TData = InfiniteData<TQueryFnData>,
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,
 >(
-  options: UseBlockingInfiniteQueryOptions<TQueryFnData, TError, TData, TQueryKey, TPageParam>
+  options: UseBlockingInfiniteQueryOptions<TQueryFnData, TError, TData, TQueryKey, TPageParam>,
+  queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError> {
   const { blockingConfig, ...queryOptions } = options;
-  const query = useInfiniteQuery(queryOptions);
+  const query = useInfiniteQuery(queryOptions, queryClient);
 
   const blockerId = useQueryBlockerId("infinite-query", options.queryKey);
 
