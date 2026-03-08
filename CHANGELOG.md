@@ -7,16 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-03-08
+
 ### Fixed
 
 - 🛡️ Fixed blocker ID collisions for `useBlockingQuery` and `useBlockingMutation` when multiple hook instances used the same key.
 - 🧹 Fixed premature blocker removal on unmount in same-key multi-instance scenarios.
+- 🧠 Fixed wrapper typing so TanStack Query inference is preserved more accurately for `select`, `initialData`, mutation variables, and `useQueries` tuples.
+- ⚙️ Fixed blocker lifecycle churn on rerender by updating existing blockers instead of tearing them down and re-adding them on every dependency change.
 
 ### Changed
 
 - 🔑 `blockerId` generation now includes per-instance identity for query/mutation hooks (same key no longer implies shared blocker ID).
 - ♻️ Simplified `useBlockingManager` effect lifecycle to reduce unnecessary remove/add churn from unstable external dependencies.
-- ⬆️ Synced local dev dependency `@okyrychenko-dev/react-action-guard` to `^0.7.0` (matches peer dependency).
+- ⬆️ Synced local dev dependency `@okyrychenko-dev/react-action-guard` to `^1.0.1` (matches peer dependency).
+- 🔄 Aligned query hook internals and docs with current TanStack Query v5 state references (`isPending` / `isRefetching`).
+- 📝 Refreshed public API docs to use the correct package introduction versions in `@since`.
+- 📦 Aligned package metadata and packed artifact validation with the published ESM/CJS entry points and type declarations.
+- ⬆️ Narrowed the documented and published `@tanstack/react-query` peer range to the tested v5 line (`^5.90.10`).
+
+### Added
+
+- 🧪 Added type-level tests covering query, infinite query, mutation, and `useQueries` inference contracts.
+- 🧪 Added rerender and React `StrictMode` lifecycle coverage for `useBlockingQuery`, `useBlockingQueries`, and `useBlockingInfiniteQuery`.
+- 📦 Added a packed-artifact smoke test in a temporary consumer app to verify import and type resolution outside the source tree.
 
 ## [0.3.0] - 2026-01-25
 
@@ -24,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ⚠️ **Updated minimum peer dependency versions**:
   - React: `^18.0.0 || ^19.0.0` (removed React 17 support)
-- ⬆️ **Updated peer dependency**: `@okyrychenko-dev/react-action-guard` from `^0.6.0` to `^0.7.0`
+- ⬆️ **Updated peer dependency**: `@okyrychenko-dev/react-action-guard` from `^0.6.0` to `^1.0.1`
 
 ### Changed
 
@@ -161,7 +175,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔍 TypeScript type definitions with detailed annotations
 - ✅ 41 unit tests with 95%+ coverage
 
-[Unreleased]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.2.4...v0.3.0
 [0.2.4]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.2.2...v0.2.3

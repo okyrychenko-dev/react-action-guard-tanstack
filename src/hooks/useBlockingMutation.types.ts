@@ -81,8 +81,8 @@ export interface UseBlockingMutationOptions<
   TData = unknown,
   TError = Error,
   TVariables = void,
-  TContext = unknown,
-> extends UseMutationOptions<TData, TError, TVariables, TContext> {
+  TOnMutateResult = unknown,
+> extends UseMutationOptions<TData, TError, TVariables, TOnMutateResult> {
   /**
    * Configuration for UI blocking behavior during mutation execution.
    */

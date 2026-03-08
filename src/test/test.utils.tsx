@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act } from "@testing-library/react";
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, StrictMode } from "react";
 
 /**
  * Helper to execute an async function with proper act() wrapping
@@ -12,8 +12,12 @@ export async function actAsync<T>(fn: () => Promise<T>): Promise<T> {
   });
 }
 
+interface CreateWrapperOptions {
+  strictMode?: boolean;
+}
+
 // Helper to create a wrapper with QueryClient
-export function createWrapper() {
+export function createWrapper(options: CreateWrapperOptions = {}) {
   const queryClient = new QueryClient({
     defaultOptions: {
       mutations: {
@@ -23,6 +27,12 @@ export function createWrapper() {
   });
 
   return function ({ children }: { children: ReactNode }): ReactElement {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const content = <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+
+    if (options.strictMode) {
+      return <StrictMode>{content}</StrictMode>;
+    }
+
+    return content;
   };
 }

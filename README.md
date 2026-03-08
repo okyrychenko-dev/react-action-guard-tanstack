@@ -13,8 +13,10 @@
 - 📊 Priority system for managing multiple blockers
 - 💬 Dynamic reasons - different messages for different states
 - 🔒 Type-safe with full TypeScript support
+- 🧠 Preserves TanStack Query inference for `select`, `initialData`, mutation variables, and `useQueries` tuples
 - ⚡ Seamless TanStack Query integration - supports all TanStack Query hooks
 - 🧹 Automatic cleanup on component unmount
+- ⚙️ Stable blocker lifecycle across rerenders and React `StrictMode`
 - 🪝 4 specialized hooks - `useBlockingQuery`, `useBlockingMutation`, `useBlockingInfiniteQuery`, `useBlockingQueries`
 - 🌳 Tree-shakeable - import only what you need
 - 🎨 Clean architecture - shared utilities for maintainability
@@ -31,8 +33,8 @@ pnpm add @okyrychenko-dev/react-action-guard-tanstack @okyrychenko-dev/react-act
 
 This package requires the following peer dependencies:
 
-- [@okyrychenko-dev/react-action-guard](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard) ^0.7.0 - The core UI blocking library
-- [@tanstack/react-query](https://tanstack.com/query) ^5.0.0 - TanStack Query for data fetching
+- [@okyrychenko-dev/react-action-guard](https://www.npmjs.com/package/@okyrychenko-dev/react-action-guard) ^1.0.1 - The core UI blocking library
+- [@tanstack/react-query](https://tanstack.com/query) ^5.90.10 - TanStack Query for data fetching
 - [React](https://react.dev/) ^18.0.0 || ^19.0.0
 - [Zustand](https://zustand-demo.pmnd.rs/) - State management (peer dependency of react-action-guard)
 
@@ -93,11 +95,11 @@ A wrapper around TanStack Query's `useQuery` that integrates with the UI blockin
     - `priority?: number` - Priority level (default: `10`)
     - `timeout?: number` - Auto-remove blocker after N milliseconds
     - `onTimeout?: (blockerId: string) => void` - Callback when blocker is auto-removed
-    - `onLoading?: boolean` - Block during initial loading (default: `true`)
-    - `onFetching?: boolean` - Block during background fetching (default: `false`)
+    - `onLoading?: boolean` - Block during the initial pending state (default: `true`)
+    - `onFetching?: boolean` - Block during background refetching (default: `false`)
     - `onError?: boolean` - Block when query fails (default: `false`)
-    - `reasonOnLoading?: string` - Message for loading state
-    - `reasonOnFetching?: string` - Message for fetching state
+    - `reasonOnLoading?: string` - Message for the initial pending state
+    - `reasonOnFetching?: string` - Message for the background refetching state
     - `reasonOnError?: string` - Message for error state
 
 **Returns:** `UseQueryResult<TData, TError>` - Standard TanStack Query result
@@ -178,11 +180,11 @@ A wrapper around TanStack Query's `useInfiniteQuery` that integrates with the UI
     - `priority?: number` - Priority level (default: `10`)
     - `timeout?: number` - Auto-remove blocker after N milliseconds
     - `onTimeout?: (blockerId: string) => void` - Callback when blocker is auto-removed
-    - `onLoading?: boolean` - Block during initial loading (default: `true`)
-    - `onFetching?: boolean` - Block during fetching next/previous page (default: `false`)
+    - `onLoading?: boolean` - Block during the initial pending state (default: `true`)
+    - `onFetching?: boolean` - Block during refetching or fetching next/previous page (default: `false`)
     - `onError?: boolean` - Block when query fails (default: `false`)
-    - `reasonOnLoading?: string` - Message for loading state
-    - `reasonOnFetching?: string` - Message for fetching state
+    - `reasonOnLoading?: string` - Message for the initial pending state
+    - `reasonOnFetching?: string` - Message for refetching or page fetching
     - `reasonOnError?: string` - Message for error state
 
 **Returns:** `UseInfiniteQueryResult<TData, TError>` - Standard TanStack Query result
@@ -237,11 +239,11 @@ A wrapper around TanStack Query's `useQueries` that integrates with the UI block
   - `priority?: number` - Priority level (default: `10`)
   - `timeout?: number` - Auto-remove blocker after N milliseconds
   - `onTimeout?: (blockerId: string) => void` - Callback when blocker is auto-removed
-  - `onLoading?: boolean` - Block when any query is loading (default: `true`)
-  - `onFetching?: boolean` - Block when any query is fetching (default: `false`)
+  - `onLoading?: boolean` - Block when any query is pending (default: `true`)
+  - `onFetching?: boolean` - Block when any query is refetching (default: `false`)
   - `onError?: boolean` - Block when any query fails (default: `false`)
-  - `reasonOnLoading?: string` - Message for loading state
-  - `reasonOnFetching?: string` - Message for fetching state
+  - `reasonOnLoading?: string` - Message for the pending state
+  - `reasonOnFetching?: string` - Message for the refetching state
   - `reasonOnError?: string` - Message for error state
 
 **Returns:** Array of `UseQueryResult` - Standard TanStack Query results
@@ -298,6 +300,13 @@ The package is configured with `"sideEffects": false`, allowing modern bundlers 
 
 The package is written in TypeScript and includes full type definitions.
 
+Type fidelity is intentionally close to native TanStack Query behavior:
+
+- `useBlockingQuery` preserves `select` inference and `initialData` overload behavior
+- `useBlockingInfiniteQuery` preserves infinite-query result typing
+- `useBlockingMutation` preserves mutation result and variable inference
+- `useBlockingQueries` preserves tuple inference for mixed query arrays
+
 ```typescript
 import type {
   // Hook options types
@@ -345,6 +354,14 @@ const mutation = useBlockingMutation<
   }
 });
 ```
+
+## Runtime Stability
+
+Blocker synchronization is designed to stay stable across rerenders.
+
+- Inline `blockingConfig` objects update the existing blocker instead of causing remove/add churn
+- Cleanup is safe under React `StrictMode`
+- Query and mutation blocker IDs stay unique per hook instance, even when keys match
 
 ## React-Action-Guard Concepts
 

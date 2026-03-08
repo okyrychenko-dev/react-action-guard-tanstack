@@ -305,4 +305,100 @@ describe("useBlockingInfiniteQuery", () => {
       expect(isBlocked("test")).toBe(false);
     });
   });
+
+  it("should keep a single blocker across rerenders with inline blocking config", async () => {
+    let resolveQuery: ((value: { data: string[]; nextCursor: number }) => void) | undefined;
+
+    const queryFn = vi.fn().mockImplementation(
+      () =>
+        new Promise<{ data: string[]; nextCursor: number }>((resolve) => {
+          resolveQuery = resolve;
+        })
+    );
+
+    const { rerender } = renderHook(
+      ({ reason }: { reason: string }) =>
+        useBlockingInfiniteQuery({
+          queryKey: ["infinite-test", "rerender"],
+          queryFn,
+          initialPageParam: 1,
+          getNextPageParam: (lastPage: { nextCursor: number }) => lastPage.nextCursor,
+          blockingConfig: {
+            scope: "test",
+            reason,
+            onLoading: true,
+          },
+        }),
+      {
+        initialProps: { reason: "Loading A" },
+        wrapper: createWrapper(),
+      }
+    );
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Loading A");
+    });
+
+    rerender({ reason: "Loading B" });
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Loading B");
+    });
+
+    resolveQuery?.({ data: ["item1"], nextCursor: 2 });
+
+    await waitFor(() => {
+      expect(uiBlockingStoreApi.getState().isBlocked("test")).toBe(false);
+    });
+  });
+
+  it("should clean up correctly in StrictMode", async () => {
+    let resolveQuery: ((value: { data: string[]; nextCursor: number }) => void) | undefined;
+
+    const queryFn = vi.fn().mockImplementation(
+      () =>
+        new Promise<{ data: string[]; nextCursor: number }>((resolve) => {
+          resolveQuery = resolve;
+        })
+    );
+
+    const { unmount } = renderHook(
+      () =>
+        useBlockingInfiniteQuery({
+          queryKey: ["infinite-test", "strict"],
+          queryFn,
+          initialPageParam: 1,
+          getNextPageParam: (lastPage: { nextCursor: number }) => lastPage.nextCursor,
+          blockingConfig: {
+            scope: "test",
+            reason: "Strict mode load",
+            onLoading: true,
+          },
+        }),
+      { wrapper: createWrapper({ strictMode: true }) }
+    );
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+      
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Strict mode load");
+    });
+
+    resolveQuery?.({ data: ["item1"], nextCursor: 2 });
+
+    await waitFor(() => {
+      expect(uiBlockingStoreApi.getState().isBlocked("test")).toBe(false);
+    });
+
+    unmount();
+
+    expect(uiBlockingStoreApi.getState().getBlockingInfo("test")).toHaveLength(0);
+  });
 });

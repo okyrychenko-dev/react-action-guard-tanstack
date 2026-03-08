@@ -401,4 +401,113 @@ describe("useBlockingQueries", () => {
       { timeout: 2000 }
     );
   });
+
+  it("should keep a single blocker across rerenders with inline blocking config", async () => {
+    let resolveFirstQuery: ((value: string) => void) | undefined;
+    let resolveSecondQuery: ((value: string) => void) | undefined;
+
+    const queryFn1 = vi.fn().mockImplementation(
+      () =>
+        new Promise<string>((resolve) => {
+          resolveFirstQuery = resolve;
+        })
+    );
+    const queryFn2 = vi.fn().mockImplementation(
+      () =>
+        new Promise<string>((resolve) => {
+          resolveSecondQuery = resolve;
+        })
+    );
+
+    const { rerender } = renderHook(
+      ({ reason }: { reason: string }) =>
+        useBlockingQueries(
+          [
+            { queryKey: ["query1", "rerender"], queryFn: queryFn1 },
+            { queryKey: ["query2", "rerender"], queryFn: queryFn2 },
+          ],
+          {
+            scope: "test",
+            reason,
+            onLoading: true,
+          }
+        ),
+      {
+        initialProps: { reason: "Loading A" },
+        wrapper: createWrapper(),
+      }
+    );
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Loading A");
+    });
+
+    rerender({ reason: "Loading B" });
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Loading B");
+    });
+
+    resolveFirstQuery?.("data1");
+    resolveSecondQuery?.("data2");
+
+    await waitFor(() => {
+      expect(uiBlockingStoreApi.getState().isBlocked("test")).toBe(false);
+    });
+  });
+
+  it("should clean up correctly in StrictMode", async () => {
+    let resolveFirstQuery: ((value: string) => void) | undefined;
+    let resolveSecondQuery: ((value: string) => void) | undefined;
+
+    const queryFn1 = vi.fn().mockImplementation(
+      () =>
+        new Promise<string>((resolve) => {
+          resolveFirstQuery = resolve;
+        })
+    );
+    const queryFn2 = vi.fn().mockImplementation(
+      () =>
+        new Promise<string>((resolve) => {
+          resolveSecondQuery = resolve;
+        })
+    );
+
+    const { unmount } = renderHook(
+      () =>
+        useBlockingQueries(
+          [
+            { queryKey: ["query1", "strict"], queryFn: queryFn1 },
+            { queryKey: ["query2", "strict"], queryFn: queryFn2 },
+          ],
+          {
+            scope: "test",
+            reason: "Strict mode load",
+            onLoading: true,
+          }
+        ),
+      { wrapper: createWrapper({ strictMode: true }) }
+    );
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Strict mode load");
+    });
+
+    resolveFirstQuery?.("data1");
+    resolveSecondQuery?.("data2");
+
+    await waitFor(() => {
+      expect(uiBlockingStoreApi.getState().isBlocked("test")).toBe(false);
+    });
+
+    unmount();
+
+    expect(uiBlockingStoreApi.getState().getBlockingInfo("test")).toHaveLength(0);
+  });
 });

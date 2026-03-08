@@ -1,19 +1,19 @@
-import { type QueryKey, useQueries } from "@tanstack/react-query";
+import { type QueriesResults, useQueries } from "@tanstack/react-query";
 import { useBlockingManager, useRandomBlockerId } from "../internal";
 import { resolveBlockingReason } from "../utils";
-import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBlockingQueries.types";
+import type { BlockingQueriesInput, QueriesBlockingConfig } from "./useBlockingQueries.types";
 
 /**
  * A wrapper around TanStack Query's `useQueries` for parallel queries with automatic UI blocking.
  *
  * This hook wraps TanStack Query's `useQueries` to run multiple queries in parallel while
  * automatically managing UI blocking based on the combined state of all queries. It blocks when
- * ANY of the queries meet the blocking conditions (loading, fetching, error).
+ * ANY of the queries meet the blocking conditions (pending, refetching, error).
  *
  * This is ideal for loading data from multiple sources simultaneously, such as loading
  * user profile, posts, and comments all at once for a dashboard.
  *
- * By default, blocks when ANY query is loading but not when queries are fetching in the background.
+ * By default, blocks when ANY query is pending but not when queries are refetching in the background.
  *
  * @typeParam TQueryFnData - The type of data returned by the query function
  * @typeParam TError - The type of error that can be thrown (default: Error)
@@ -24,14 +24,14 @@ import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBloc
  * @param blockingConfig - Shared blocking configuration for all queries
  * @param blockingConfig.scope - Scope(s) to block (default: 'global')
  * @param blockingConfig.reason - Default blocking reason (default: 'Loading queries...')
- * @param blockingConfig.reasonOnLoading - Reason when ANY query is loading
- * @param blockingConfig.reasonOnFetching - Reason when ANY query is fetching
+ * @param blockingConfig.reasonOnLoading - Reason when ANY query is pending
+ * @param blockingConfig.reasonOnFetching - Reason when ANY query is refetching
  * @param blockingConfig.reasonOnError - Reason when ANY query has an error
  * @param blockingConfig.priority - Priority level 0-100 (default: 10)
  * @param blockingConfig.timeout - Auto-remove blocker after N milliseconds
  * @param blockingConfig.onTimeout - Callback when timeout occurs
- * @param blockingConfig.onLoading - Block when ANY query is loading (default: true)
- * @param blockingConfig.onFetching - Block when ANY query is fetching (default: false)
+ * @param blockingConfig.onLoading - Block when ANY query is pending (default: true)
+ * @param blockingConfig.onFetching - Block when ANY query is refetching (default: false)
  * @param blockingConfig.onError - Block when ANY query has error (default: false)
  *
  * @returns Array of query result objects (same as TanStack Query `useQueries`)
@@ -159,17 +159,14 @@ import type { QueriesBlockingConfig, UseBlockingQueriesOptions } from "./useBloc
  * @see {@link useBlockingMutation} for mutations
  *
  * @public
- * @since 0.6.0
+ * @since 0.2.0
  */
 export function useBlockingQueries<
-  TQueryFnData = unknown,
-  TError = Error,
-  TData = TQueryFnData,
-  TQueryKey extends QueryKey = QueryKey,
+  T extends unknown[],
 >(
-  queries: ReadonlyArray<UseBlockingQueriesOptions<TQueryFnData, TError, TData, TQueryKey>>,
+  queries: BlockingQueriesInput<T>,
   blockingConfig: QueriesBlockingConfig
-) {
+): QueriesResults<T> {
   const results = useQueries({
     queries,
   });
@@ -190,8 +187,8 @@ export function useBlockingQueries<
     onError = false,
   } = blockingConfig;
 
-  const loadingCount = results.filter((r) => r.isLoading).length;
-  const fetchingCount = results.filter((r) => r.isFetching && !r.isLoading).length;
+  const loadingCount = results.filter((r) => r.isPending).length;
+  const fetchingCount = results.filter((r) => r.isRefetching).length;
   const errorCount = results.filter((r) => r.isError).length;
 
   const shouldBlock =

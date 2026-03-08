@@ -202,16 +202,16 @@ import type { UseBlockingMutationOptions } from "./useBlockingMutation.types";
  * @see {@link useBlockingInfiniteQuery} for infinite queries with blocking
  *
  * @public
- * @since 0.6.0
+ * @since 0.1.0
  */
 export function useBlockingMutation<
   TData = unknown,
   TError = Error,
   TVariables = void,
-  TContext = unknown,
+  TOnMutateResult = unknown,
 >(
-  options: UseBlockingMutationOptions<TData, TError, TVariables, TContext>
-): UseMutationResult<TData, TError, TVariables, TContext> {
+  options: UseBlockingMutationOptions<TData, TError, TVariables, TOnMutateResult>
+): UseMutationResult<TData, TError, TVariables, TOnMutateResult> {
   const { blockingConfig, mutationKey, ...mutationOptions } = options;
   const mutation = useMutation({ mutationKey, ...mutationOptions });
 

@@ -142,7 +142,7 @@ describe("useBlockingQuery", () => {
     // Should block during fetching
     await waitFor(() => {
       const { isBlocked } = uiBlockingStoreApi.getState();
-      if (result.current.isFetching && !result.current.isLoading) {
+      if (result.current.isRefetching) {
         expect(isBlocked("test")).toBe(true);
       }
     });
@@ -505,6 +505,93 @@ describe("useBlockingQuery", () => {
     });
   });
 
+  it("should keep a single blocker across rerenders with inline blocking config", async () => {
+    let resolveQuery: ((value: string) => void) | undefined;
+    const queryFn = vi.fn().mockImplementation(
+      () =>
+        new Promise<string>((resolve) => {
+          resolveQuery = resolve;
+        })
+    );
+
+    const { rerender } = renderHook(
+      ({ reason }: { reason: string }) =>
+        useBlockingQuery({
+          queryKey: ["test", "rerender"],
+          queryFn,
+          blockingConfig: {
+            scope: "test",
+            reason,
+            onLoading: true,
+          },
+        }),
+      {
+        initialProps: { reason: "Loading A" },
+        wrapper: createWrapper(),
+      }
+    );
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Loading A");
+    });
+
+    rerender({ reason: "Loading B" });
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Loading B");
+    });
+
+    resolveQuery?.("done");
+
+    await waitFor(() => {
+      expect(uiBlockingStoreApi.getState().isBlocked("test")).toBe(false);
+    });
+  });
+
+  it("should clean up correctly in StrictMode", async () => {
+    let resolveQuery: ((value: string) => void) | undefined;
+    const queryFn = vi.fn().mockImplementation(
+      () =>
+        new Promise<string>((resolve) => {
+          resolveQuery = resolve;
+        })
+    );
+
+    const { unmount } = renderHook(
+      () =>
+        useBlockingQuery({
+          queryKey: ["strict-mode"],
+          queryFn,
+          blockingConfig: {
+            scope: "test",
+            reason: "Strict mode load",
+            onLoading: true,
+          },
+        }),
+      { wrapper: createWrapper({ strictMode: true }) }
+    );
+
+    await waitFor(() => {
+      const info = uiBlockingStoreApi.getState().getBlockingInfo("test");
+      expect(info).toHaveLength(1);
+      expect(info[0]?.reason).toBe("Strict mode load");
+    });
+
+    resolveQuery?.("done");
+
+    await waitFor(() => {
+      expect(uiBlockingStoreApi.getState().isBlocked("test")).toBe(false);
+    });
+
+    unmount();
+
+    expect(uiBlockingStoreApi.getState().getBlockingInfo("test")).toHaveLength(0);
+  });
+
   it("should use reasonOnLoading during initial loading state", async () => {
     const queryFn = vi.fn().mockImplementation(
       () =>
@@ -571,7 +658,7 @@ describe("useBlockingQuery", () => {
     await waitFor(() => {
       const { getBlockingInfo } = uiBlockingStoreApi.getState();
       const info = getBlockingInfo("test");
-      if (result.current.isFetching && !result.current.isLoading && info.length > 0) {
+      if (result.current.isRefetching && info.length > 0) {
         expect(info[0]?.reason).toBe("Refreshing data...");
       }
     });
@@ -672,7 +759,7 @@ describe("useBlockingQuery", () => {
     await waitFor(() => {
       const { getBlockingInfo } = uiBlockingStoreApi.getState();
       const info = getBlockingInfo("test");
-      if (result.current.isLoading && info.length > 0) {
+      if (result.current.isPending && info.length > 0) {
         expect(info[0]?.reason).toBe("Loading...");
       }
     });

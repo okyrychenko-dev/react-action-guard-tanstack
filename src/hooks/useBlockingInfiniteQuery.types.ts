@@ -1,13 +1,19 @@
-import { QueryKey, UseInfiniteQueryOptions } from "@tanstack/react-query";
 import type { BaseBlockingConfig } from "../types";
+import type {
+  DefinedInitialDataInfiniteOptions,
+  InfiniteData,
+  QueryKey,
+  UndefinedInitialDataInfiniteOptions,
+  UseInfiniteQueryOptions,
+} from "@tanstack/react-query";
 
 /**
  * Configuration for infinite query blocking with dynamic reasons.
- * Supports different messages for loading, fetching, and error states.
+ * Supports different messages for pending, fetching, and error states.
  */
 export interface InfiniteQueryBlockingConfig extends BaseBlockingConfig {
   /**
-   * Whether to block during initial loading (default: true).
+   * Whether to block during the initial pending state (default: true).
    * Set to false to skip blocking during the first data fetch.
    */
   onLoading?: boolean;
@@ -22,7 +28,7 @@ export interface InfiniteQueryBlockingConfig extends BaseBlockingConfig {
    */
   onError?: boolean;
   /**
-   * Message to show during initial loading.
+   * Message to show during the initial pending state.
    * Falls back to `reason` if not specified.
    */
   reasonOnLoading?: string;
@@ -51,7 +57,7 @@ export interface InfiniteQueryBlockingConfig extends BaseBlockingConfig {
 export interface UseBlockingInfiniteQueryOptions<
   TQueryFnData = unknown,
   TError = Error,
-  TData = TQueryFnData,
+  TData = InfiniteData<TQueryFnData>,
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,
 > extends UseInfiniteQueryOptions<TQueryFnData, TError, TData, TQueryKey, TPageParam> {
@@ -60,3 +66,37 @@ export interface UseBlockingInfiniteQueryOptions<
    */
   blockingConfig: InfiniteQueryBlockingConfig;
 }
+
+type BlockingInfiniteQueryConfig = {
+  blockingConfig: InfiniteQueryBlockingConfig;
+};
+
+export type UndefinedInitialDataBlockingInfiniteQueryOptions<
+  TQueryFnData,
+  TError = Error,
+  TData = InfiniteData<TQueryFnData>,
+  TQueryKey extends QueryKey = QueryKey,
+  TPageParam = unknown,
+> = UndefinedInitialDataInfiniteOptions<
+  TQueryFnData,
+  TError,
+  TData,
+  TQueryKey,
+  TPageParam
+> &
+  BlockingInfiniteQueryConfig;
+
+export type DefinedInitialDataBlockingInfiniteQueryOptions<
+  TQueryFnData,
+  TError = Error,
+  TData = InfiniteData<TQueryFnData>,
+  TQueryKey extends QueryKey = QueryKey,
+  TPageParam = unknown,
+> = DefinedInitialDataInfiniteOptions<
+  TQueryFnData,
+  TError,
+  TData,
+  TQueryKey,
+  TPageParam
+> &
+  BlockingInfiniteQueryConfig;

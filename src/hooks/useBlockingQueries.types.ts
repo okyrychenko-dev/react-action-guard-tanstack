@@ -1,13 +1,13 @@
-import { QueryKey, UseQueryOptions } from "@tanstack/react-query";
+import type { QueriesOptions, QueryKey, UseQueryOptions } from "@tanstack/react-query";
 import type { BaseBlockingConfig } from "../types";
 
 /**
  * Configuration for queries blocking with dynamic reasons.
- * Supports different messages for loading, fetching, and error states.
+ * Supports different messages for pending, refetching, and error states.
  */
 export interface QueriesBlockingConfig extends BaseBlockingConfig {
   /**
-   * Whether to block during initial loading (default: true).
+   * Whether to block during the initial pending state (default: true).
    * Set to false to skip blocking during the first data fetch.
    */
   onLoading?: boolean;
@@ -22,12 +22,12 @@ export interface QueriesBlockingConfig extends BaseBlockingConfig {
    */
   onError?: boolean;
   /**
-   * Message to show during initial loading.
+   * Message to show during the initial pending state.
    * Falls back to `reason` if not specified.
    */
   reasonOnLoading?: string;
   /**
-   * Message to show during background fetching.
+   * Message to show during background refetching.
    * Falls back to `reason` if not specified.
    */
   reasonOnFetching?: string;
@@ -53,3 +53,5 @@ export type UseBlockingQueriesOptions<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 > = UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>;
+
+export type BlockingQueriesInput<T extends unknown[]> = readonly [...QueriesOptions<T>];

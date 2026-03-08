@@ -7,7 +7,7 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ["react", "@tanstack/react-query"],
+  external: ["react", "@tanstack/react-query", "@okyrychenko-dev/react-action-guard"],
   treeshake: true,
   minify: false,
 });

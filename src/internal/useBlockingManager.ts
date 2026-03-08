@@ -30,28 +30,32 @@ export function useBlockingManager(
     removeBlocker: state.removeBlocker,
   }));
 
-  // Track if blocker was added in the current effect lifecycle
-  const wasBlockedRef = useRef(false);
+  // Track whether this hook instance currently owns an active blocker.
+  const isRegisteredRef = useRef(false);
 
   useEffect(() => {
-    if (shouldBlock) {
-      if (wasBlockedRef.current) {
-        updateBlocker(blockerId, { scope, reason, priority });
-      } else {
-        addBlocker(blockerId, { scope, reason, priority, timeout, onTimeout });
-        wasBlockedRef.current = true;
-      }
-    } else if (wasBlockedRef.current) {
-      removeBlocker(blockerId);
-      wasBlockedRef.current = false;
-    }
-
     return () => {
-      if (wasBlockedRef.current) {
+      if (isRegisteredRef.current) {
         removeBlocker(blockerId);
-        wasBlockedRef.current = false;
+        isRegisteredRef.current = false;
       }
     };
+  }, [blockerId, removeBlocker]);
+
+  useEffect(() => {
+    const blockerConfig = { scope, reason, priority, timeout, onTimeout };
+
+    if (shouldBlock) {
+      if (isRegisteredRef.current) {
+        updateBlocker(blockerId, blockerConfig);
+      } else {
+        addBlocker(blockerId, blockerConfig);
+        isRegisteredRef.current = true;
+      }
+    } else if (isRegisteredRef.current) {
+      removeBlocker(blockerId);
+      isRegisteredRef.current = false;
+    }
   }, [
     addBlocker,
     updateBlocker,

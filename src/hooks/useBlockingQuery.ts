@@ -1,13 +1,23 @@
-import { type QueryKey, type UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+  type DefinedUseQueryResult,
+  type NoInfer,
+  type QueryKey,
+  type UseQueryResult,
+  useQuery,
+} from "@tanstack/react-query";
 import { useBlockingManager, useQueryBlockerId } from "../internal";
 import { resolveBlockingReason } from "../utils";
-import type { UseBlockingQueryOptions } from "./useBlockingQuery.types";
+import type {
+  DefinedInitialDataBlockingQueryOptions,
+  UndefinedInitialDataBlockingQueryOptions,
+  UseBlockingQueryOptions,
+} from "./useBlockingQuery.types";
 
 /**
  * A wrapper around TanStack Query's `useQuery` that integrates with the UI blocking system.
  *
  * This hook provides the same API as `useQuery` with additional blocking configuration.
- * It automatically manages UI blocking based on query states (loading, fetching, error).
+ * It automatically manages UI blocking based on query states (pending, refetching, error).
  *
  * @typeParam TQueryFnData - The type of data returned by the query function
  * @typeParam TError - The type of error that can be thrown
@@ -163,8 +173,26 @@ export function useBlockingQuery<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
+  options: DefinedInitialDataBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>
+): DefinedUseQueryResult<NoInfer<TData>, TError>;
+
+export function useBlockingQuery<
+  TQueryFnData = unknown,
+  TError = Error,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey,
+>(
+  options: UndefinedInitialDataBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>
+): UseQueryResult<NoInfer<TData>, TError>;
+
+export function useBlockingQuery<
+  TQueryFnData = unknown,
+  TError = Error,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey,
+>(
   options: UseBlockingQueryOptions<TQueryFnData, TError, TData, TQueryKey>
-): UseQueryResult<TData, TError> {
+): UseQueryResult<NoInfer<TData>, TError> {
   const { blockingConfig, ...queryOptions } = options;
   const query = useQuery(queryOptions);
 
@@ -185,15 +213,13 @@ export function useBlockingQuery<
   } = blockingConfig;
 
   const shouldBlock =
-    (onLoading && query.isLoading) ||
-    (onFetching && query.isFetching && !query.isLoading) ||
-    (onError && query.isError);
+    (onLoading && query.isPending) || (onFetching && query.isRefetching) || (onError && query.isError);
 
   const currentReason = resolveBlockingReason({
     defaultReason: reason,
     stateReasons: [
-      { condition: query.isLoading, reason: reasonOnLoading },
-      { condition: query.isFetching && !query.isLoading, reason: reasonOnFetching },
+      { condition: query.isPending, reason: reasonOnLoading },
+      { condition: query.isRefetching, reason: reasonOnFetching },
       { condition: query.isError, reason: reasonOnError },
     ],
   });

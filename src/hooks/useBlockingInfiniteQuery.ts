@@ -1,11 +1,17 @@
 import {
+  type DefinedUseInfiniteQueryResult,
+  type InfiniteData,
   type QueryKey,
   type UseInfiniteQueryResult,
   useInfiniteQuery,
 } from "@tanstack/react-query";
 import { useBlockingManager, useQueryBlockerId } from "../internal";
 import { resolveBlockingReason } from "../utils";
-import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery.types";
+import type {
+  DefinedInitialDataBlockingInfiniteQueryOptions,
+  UndefinedInitialDataBlockingInfiniteQueryOptions,
+  UseBlockingInfiniteQueryOptions,
+} from "./useBlockingInfiniteQuery.types";
 
 /**
  * A drop-in replacement for TanStack Query's `useInfiniteQuery` with automatic UI blocking.
@@ -14,7 +20,7 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  * with automatic UI blocking. It handles blocking during initial page load and optionally during
  * loading of additional pages (next/previous).
  *
- * By default, only blocks during initial data load (`isLoading`), not when fetching more pages.
+ * By default, only blocks during initial data load (`isPending`), not when fetching more pages.
  * This allows users to continue interacting with already-loaded content while more loads in the background.
  *
  * @typeParam TQueryFnData - The type of data returned by the query function
@@ -38,7 +44,7 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  * @param options.blockingConfig.priority - Priority level 0-100 (default: 10)
  * @param options.blockingConfig.timeout - Auto-remove blocker after N milliseconds
  * @param options.blockingConfig.onTimeout - Callback when timeout occurs
- * @param options.blockingConfig.onLoading - Block during isLoading state (default: true)
+ * @param options.blockingConfig.onLoading - Block during initial pending state (default: true)
  * @param options.blockingConfig.onFetching - Block during page fetching (default: false)
  * @param options.blockingConfig.onError - Block during error state (default: false)
  *
@@ -165,12 +171,44 @@ import type { UseBlockingInfiniteQueryOptions } from "./useBlockingInfiniteQuery
  * @see {@link useBlockingMutation} for mutations
  *
  * @public
- * @since 0.6.0
+ * @since 0.2.0
  */
+export function useBlockingInfiniteQuery<
+  TQueryFnData,
+  TError = Error,
+  TData = InfiniteData<TQueryFnData>,
+  TQueryKey extends QueryKey = QueryKey,
+  TPageParam = unknown,
+>(
+  options: DefinedInitialDataBlockingInfiniteQueryOptions<
+    TQueryFnData,
+    TError,
+    TData,
+    TQueryKey,
+    TPageParam
+  >
+): DefinedUseInfiniteQueryResult<TData, TError>;
+
+export function useBlockingInfiniteQuery<
+  TQueryFnData,
+  TError = Error,
+  TData = InfiniteData<TQueryFnData>,
+  TQueryKey extends QueryKey = QueryKey,
+  TPageParam = unknown,
+>(
+  options: UndefinedInitialDataBlockingInfiniteQueryOptions<
+    TQueryFnData,
+    TError,
+    TData,
+    TQueryKey,
+    TPageParam
+  >
+): UseInfiniteQueryResult<TData, TError>;
+
 export function useBlockingInfiniteQuery<
   TQueryFnData = unknown,
   TError = Error,
-  TData = TQueryFnData,
+  TData = InfiniteData<TQueryFnData>,
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,
 >(
@@ -196,18 +234,17 @@ export function useBlockingInfiniteQuery<
   } = blockingConfig;
 
   const isFetchingButNotLoading =
-    (query.isFetching || query.isFetchingNextPage || query.isFetchingPreviousPage) &&
-    !query.isLoading;
+    query.isRefetching || query.isFetchingNextPage || query.isFetchingPreviousPage;
 
   const shouldBlock =
-    (onLoading && query.isLoading) ||
+    (onLoading && query.isPending) ||
     (onFetching && isFetchingButNotLoading) ||
     (onError && query.isError);
 
   const currentReason = resolveBlockingReason({
     defaultReason: reason,
     stateReasons: [
-      { condition: query.isLoading, reason: reasonOnLoading },
+      { condition: query.isPending, reason: reasonOnLoading },
       { condition: isFetchingButNotLoading, reason: reasonOnFetching },
       { condition: query.isError, reason: reasonOnError },
     ],
