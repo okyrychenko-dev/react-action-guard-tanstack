@@ -1,6 +1,6 @@
 {
   "name": "@okyrychenko-dev/react-action-guard-tanstack",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "description": "TanStack Query integration for React Action Guard - seamless UI blocking for queries and mutations",
   "main": "./dist/index.js",
@@ -45,7 +45,7 @@
     "loading",
     "async-operations"
   ],
-  "author": "Olexii Kyrychenko alexey.kirichenko@gmail.com",
+  "author": "Oleksii Kyrychenko alexey.kirichenko@gmail.com",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -59,16 +59,16 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@okyrychenko-dev/react-action-guard": "^1.0.1",
+    "@okyrychenko-dev/react-action-guard": "^1.0.2",
     "@tanstack/react-query": "^5.90.10",
     "react": "^18.0.0 || ^19.0.0"
   },
   "overrides": {
-    "@okyrychenko-dev/react-zustand-toolkit": "^0.3.0"
+    "@okyrychenko-dev/react-zustand-toolkit": "^0.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@okyrychenko-dev/react-action-guard": "^1.0.1",
+    "@okyrychenko-dev/react-action-guard": "^1.0.2",
     "@tanstack/react-query": "^5.90.10",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

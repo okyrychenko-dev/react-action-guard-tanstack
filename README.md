@@ -41,9 +41,12 @@ This package requires the following peer dependencies:
 ## Quick Start
 
 ```tsx
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useBlockingQuery, useBlockingMutation } from '@okyrychenko-dev/react-action-guard-tanstack';
-import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  useBlockingQuery,
+  useBlockingMutation,
+} from "@okyrychenko-dev/react-action-guard-tanstack";
+import { useIsBlocked } from "@okyrychenko-dev/react-action-guard";
 
 // Setup QueryClient
 const queryClient = new QueryClient();
@@ -59,15 +62,15 @@ function App() {
 // Use in your components
 function UserProfile() {
   const query = useBlockingQuery({
-    queryKey: ['user', userId],
+    queryKey: ["user", userId],
     queryFn: () => fetchUser(userId),
     blockingConfig: {
-      scope: 'profile',
-      reason: 'Loading profile...',
-    }
+      scope: "profile",
+      reason: "Loading profile...",
+    },
   });
 
-  const isBlocked = useIsBlocked('profile');
+  const isBlocked = useIsBlocked("profile");
 
   return (
     <div>
@@ -109,17 +112,17 @@ A wrapper around TanStack Query's `useQuery` that integrates with the UI blockin
 ```tsx
 function MyComponent() {
   const query = useBlockingQuery({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: fetchUsers,
     blockingConfig: {
-      scope: 'global',
-      reasonOnLoading: 'Loading users...',
-      reasonOnFetching: 'Refreshing users...',
-      reasonOnError: 'Failed to load users',
+      scope: "global",
+      reasonOnLoading: "Loading users...",
+      reasonOnFetching: "Refreshing users...",
+      reasonOnError: "Failed to load users",
       onLoading: true,
       onFetching: false,
       onError: true,
-    }
+    },
   });
 
   return <div>{/* your UI */}</div>;
@@ -152,18 +155,14 @@ function MyComponent() {
   const mutation = useBlockingMutation({
     mutationFn: createUser,
     blockingConfig: {
-      scope: 'user-form',
-      reasonOnPending: 'Creating user...',
-      reasonOnError: 'Failed to create user',
+      scope: "user-form",
+      reasonOnPending: "Creating user...",
+      reasonOnError: "Failed to create user",
       onError: true,
-    }
+    },
   });
 
-  return (
-    <button onClick={() => mutation.mutate({ name: 'John' })}>
-      Create User
-    </button>
-  );
+  return <button onClick={() => mutation.mutate({ name: "John" })}>Create User</button>;
 }
 ```
 
@@ -194,33 +193,29 @@ A wrapper around TanStack Query's `useInfiniteQuery` that integrates with the UI
 ```tsx
 function InfiniteList() {
   const query = useBlockingInfiniteQuery({
-    queryKey: ['posts'],
+    queryKey: ["posts"],
     queryFn: ({ pageParam }) => fetchPosts(pageParam),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     blockingConfig: {
-      scope: 'post-list',
-      reasonOnLoading: 'Loading posts...',
-      reasonOnFetching: 'Loading more posts...',
+      scope: "post-list",
+      reasonOnLoading: "Loading posts...",
+      reasonOnFetching: "Loading more posts...",
       onLoading: true,
       onFetching: true,
-    }
+    },
   });
 
   return (
     <div>
       {query.data?.pages.map((page, i) => (
         <div key={i}>
-          {page.posts.map(post => (
+          {page.posts.map((post) => (
             <div key={post.id}>{post.title}</div>
           ))}
         </div>
       ))}
-      {query.hasNextPage && (
-        <button onClick={() => query.fetchNextPage()}>
-          Load More
-        </button>
-      )}
+      {query.hasNextPage && <button onClick={() => query.fetchNextPage()}>Load More</button>}
     </div>
   );
 }
@@ -254,14 +249,14 @@ A wrapper around TanStack Query's `useQueries` that integrates with the UI block
 function Dashboard() {
   const results = useBlockingQueries(
     [
-      { queryKey: ['user'], queryFn: fetchUser },
-      { queryKey: ['posts'], queryFn: fetchPosts },
-      { queryKey: ['comments'], queryFn: fetchComments },
+      { queryKey: ["user"], queryFn: fetchUser },
+      { queryKey: ["posts"], queryFn: fetchPosts },
+      { queryKey: ["comments"], queryFn: fetchComments },
     ],
     {
-      scope: 'dashboard',
-      reasonOnLoading: 'Loading dashboard...',
-      reasonOnFetching: 'Refreshing data...',
+      scope: "dashboard",
+      reasonOnLoading: "Loading dashboard...",
+      reasonOnFetching: "Refreshing data...",
       onLoading: true,
     }
   );
@@ -284,15 +279,16 @@ The library is fully tree-shakeable. Import only the hooks you need to keep your
 
 ```tsx
 // Only imports the hook you need
-import { useBlockingQuery } from '@okyrychenko-dev/react-action-guard-tanstack';
+import { useBlockingQuery } from "@okyrychenko-dev/react-action-guard-tanstack";
 
 // Internal utilities are not bundled unless used
-import { useBlockingMutation } from '@okyrychenko-dev/react-action-guard-tanstack';
+import { useBlockingMutation } from "@okyrychenko-dev/react-action-guard-tanstack";
 ```
 
 The package is configured with `"sideEffects": false`, allowing modern bundlers (Webpack, Rollup, Vite) to eliminate unused code automatically.
 
 **Bundle sizes** (approximate):
+
 - Full library: ~6.3 KB (ESM, minified)
 - Single hook: ~2-3 KB (with shared utilities)
 
@@ -325,7 +321,7 @@ import type {
 
   // Base types
   BaseBlockingConfig,
-} from '@okyrychenko-dev/react-action-guard-tanstack';
+} from "@okyrychenko-dev/react-action-guard-tanstack";
 
 // Usage with type parameters
 interface User {
@@ -335,25 +331,25 @@ interface User {
 }
 
 const query = useBlockingQuery<User>({
-  queryKey: ['user', userId],
+  queryKey: ["user", userId],
   queryFn: () => fetchUser(userId),
   blockingConfig: {
-    scope: 'user',
-    reason: 'Loading user...',
-  }
+    scope: "user",
+    reason: "Loading user...",
+  },
 });
 // query.data is User | undefined
 
 const mutation = useBlockingMutation<
-  User,           // Response type
-  Error,          // Error type
+  User, // Response type
+  Error, // Error type
   { name: string } // Variables type
 >({
   mutationFn: (variables) => createUser(variables),
   blockingConfig: {
-    scope: 'user-form',
-    reasonOnPending: 'Creating user...',
-  }
+    scope: "user-form",
+    reasonOnPending: "Creating user...",
+  },
 });
 ```
 
@@ -375,26 +371,26 @@ This package integrates TanStack Query with React-Action-Guard's powerful scope-
 Different parts of your UI can block independently via scopes:
 
 ```tsx
-import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
+import { useIsBlocked } from "@okyrychenko-dev/react-action-guard";
 
 // Query blocks 'users-table' scope
 function UserTableLoader() {
   useBlockingQuery({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: fetchUsers,
-    blockingConfig: { scope: 'users-table' }
+    blockingConfig: { scope: "users-table" },
   });
 }
 
 // Table checks its scope
 function UserTable() {
-  const isBlocked = useIsBlocked('users-table');
+  const isBlocked = useIsBlocked("users-table");
   // Blocked during query load
 }
 
 // Sidebar has different scope - stays interactive
 function Sidebar() {
-  const isBlocked = useIsBlocked('sidebar');
+  const isBlocked = useIsBlocked("sidebar");
   // isBlocked === false ✅
 }
 ```
@@ -404,12 +400,12 @@ function Sidebar() {
 React to blocking state from any component:
 
 ```tsx
-import { useIsBlocked, useBlockingInfo } from '@okyrychenko-dev/react-action-guard';
+import { useIsBlocked, useBlockingInfo } from "@okyrychenko-dev/react-action-guard";
 
 // Anywhere in your app
 function StatusBar() {
-  const blockers = useBlockingInfo('dashboard');
-  
+  const blockers = useBlockingInfo("dashboard");
+
   if (blockers.length > 0) {
     return <div>{blockers[0].reason}</div>; // "Loading dashboard..."
   }
@@ -417,7 +413,7 @@ function StatusBar() {
 }
 
 function SaveButton() {
-  const isBlocked = useIsBlocked('checkout');
+  const isBlocked = useIsBlocked("checkout");
   return <button disabled={isBlocked}>Proceed</button>;
 }
 ```
@@ -431,23 +427,23 @@ One query/mutation coordinates many components automatically:
 function SaveData() {
   const mutation = useBlockingMutation({
     mutationFn: saveData,
-    blockingConfig: { scope: 'edit-mode' }
+    blockingConfig: { scope: "edit-mode" },
   });
 }
 
 // Components B, C, D: All react automatically
 function FormInputs() {
-  const isBlocked = useIsBlocked('edit-mode');
+  const isBlocked = useIsBlocked("edit-mode");
   // Inputs disabled during save
 }
 
 function CancelButton() {
-  const isBlocked = useIsBlocked('edit-mode');
+  const isBlocked = useIsBlocked("edit-mode");
   // Button disabled during save
 }
 
 function NavigationLinks() {
-  const isBlocked = useIsBlocked('edit-mode');
+  const isBlocked = useIsBlocked("edit-mode");
   // Navigation blocked during save
 }
 
@@ -463,22 +459,22 @@ Higher priority blockers override lower ones:
 const paymentMutation = useBlockingMutation({
   mutationFn: processPayment,
   blockingConfig: {
-    scope: 'checkout',
+    scope: "checkout",
     priority: 100, // Highest
-  }
+  },
 });
 
 const query = useBlockingQuery({
-  queryKey: ['cart'],
+  queryKey: ["cart"],
   queryFn: fetchCart,
   blockingConfig: {
-    scope: 'checkout',
+    scope: "checkout",
     priority: 50, // Lower - won't block if payment is processing
-  }
+  },
 });
 
 // Only highest priority blocker's reason is shown
-const blockers = useBlockingInfo('checkout');
+const blockers = useBlockingInfo("checkout");
 const topReason = blockers[0]?.reason; // From priority 100
 ```
 
@@ -497,13 +493,13 @@ const topReason = blockers[0]?.reason; // From priority 100
 ```tsx
 function DataLoader() {
   const query = useBlockingQuery({
-    queryKey: ['data'],
+    queryKey: ["data"],
     queryFn: fetchData,
     blockingConfig: {
-      scope: 'content',
-      reasonOnLoading: 'Loading data...',
+      scope: "content",
+      reasonOnLoading: "Loading data...",
       onLoading: true,
-    }
+    },
   });
 
   // ... rest of component
@@ -513,21 +509,21 @@ function DataLoader() {
 ### Form Submission
 
 ```tsx
-import { useBlockingMutation } from '@okyrychenko-dev/react-action-guard-tanstack';
-import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
+import { useBlockingMutation } from "@okyrychenko-dev/react-action-guard-tanstack";
+import { useIsBlocked } from "@okyrychenko-dev/react-action-guard";
 
 function UserForm() {
   const mutation = useBlockingMutation({
     mutationFn: submitForm,
     blockingConfig: {
-      scope: 'form',
-      reasonOnPending: 'Submitting form...',
-      reasonOnError: 'Failed to submit',
+      scope: "form",
+      reasonOnPending: "Submitting form...",
+      reasonOnError: "Failed to submit",
       onError: true,
-    }
+    },
   });
 
-  const isBlocked = useIsBlocked('form');
+  const isBlocked = useIsBlocked("form");
 
   const handleSubmit = async (data) => {
     await mutation.mutateAsync(data);
@@ -545,33 +541,29 @@ function UserForm() {
 ### Infinite Scrolling
 
 ```tsx
-import { useBlockingInfiniteQuery } from '@okyrychenko-dev/react-action-guard-tanstack';
+import { useBlockingInfiniteQuery } from "@okyrychenko-dev/react-action-guard-tanstack";
 
 function InfinitePostList() {
   const query = useBlockingInfiniteQuery({
-    queryKey: ['posts'],
+    queryKey: ["posts"],
     queryFn: ({ pageParam }) => fetchPosts(pageParam),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     blockingConfig: {
-      scope: 'post-list',
-      reasonOnLoading: 'Loading posts...',
-      reasonOnFetching: 'Loading more posts...',
+      scope: "post-list",
+      reasonOnLoading: "Loading posts...",
+      reasonOnFetching: "Loading more posts...",
       onLoading: true,
       onFetching: true,
-    }
+    },
   });
 
   return (
     <div>
       {query.data?.pages.map((page) =>
-        page.posts.map(post => <PostCard key={post.id} post={post} />)
+        page.posts.map((post) => <PostCard key={post.id} post={post} />)
       )}
-      {query.hasNextPage && (
-        <button onClick={() => query.fetchNextPage()}>
-          Load More
-        </button>
-      )}
+      {query.hasNextPage && <button onClick={() => query.fetchNextPage()}>Load More</button>}
     </div>
   );
 }
@@ -580,18 +572,18 @@ function InfinitePostList() {
 ### Multiple Parallel Queries
 
 ```tsx
-import { useBlockingQueries } from '@okyrychenko-dev/react-action-guard-tanstack';
+import { useBlockingQueries } from "@okyrychenko-dev/react-action-guard-tanstack";
 
 function UserDashboard({ userId }) {
   const results = useBlockingQueries(
     [
-      { queryKey: ['user', userId], queryFn: () => fetchUser(userId) },
-      { queryKey: ['posts', userId], queryFn: () => fetchUserPosts(userId) },
-      { queryKey: ['stats', userId], queryFn: () => fetchUserStats(userId) },
+      { queryKey: ["user", userId], queryFn: () => fetchUser(userId) },
+      { queryKey: ["posts", userId], queryFn: () => fetchUserPosts(userId) },
+      { queryKey: ["stats", userId], queryFn: () => fetchUserStats(userId) },
     ],
     {
-      scope: 'user-dashboard',
-      reasonOnLoading: 'Loading dashboard...',
+      scope: "user-dashboard",
+      reasonOnLoading: "Loading dashboard...",
       onLoading: true,
     }
   );
@@ -611,10 +603,10 @@ function UserDashboard({ userId }) {
 ### Global Loading Overlay
 
 ```tsx
-import { useIsBlocked } from '@okyrychenko-dev/react-action-guard';
+import { useIsBlocked } from "@okyrychenko-dev/react-action-guard";
 
 function App() {
-  const isGloballyBlocked = useIsBlocked('global');
+  const isGloballyBlocked = useIsBlocked("global");
 
   return (
     <div>
@@ -626,12 +618,12 @@ function App() {
 
 function SomeComponent() {
   const query = useBlockingQuery({
-    queryKey: ['critical-data'],
+    queryKey: ["critical-data"],
     queryFn: fetchCriticalData,
     blockingConfig: {
-      scope: 'global', // Blocks entire app
-      reasonOnLoading: 'Loading critical data...',
-    }
+      scope: "global", // Blocks entire app
+      reasonOnLoading: "Loading critical data...",
+    },
   });
 
   return <div>Content</div>;
@@ -648,20 +640,20 @@ function MultiStepWizard() {
   const paymentMutation = useBlockingMutation({
     mutationFn: processPayment,
     blockingConfig: {
-      scope: ['navigation', 'form'],
-      reasonOnPending: 'Processing payment...',
+      scope: ["navigation", "form"],
+      reasonOnPending: "Processing payment...",
       priority: 100, // High priority
-    }
+    },
   });
 
   // Lower priority for other steps
   const saveDraftMutation = useBlockingMutation({
     mutationFn: saveDraft,
     blockingConfig: {
-      scope: 'navigation',
-      reasonOnPending: 'Saving draft...',
+      scope: "navigation",
+      reasonOnPending: "Saving draft...",
       priority: 50, // Lower priority
-    }
+    },
   });
 
   return <div>Step {step}</div>;
@@ -673,15 +665,15 @@ function MultiStepWizard() {
 ```tsx
 function LiveData() {
   const query = useBlockingQuery({
-    queryKey: ['live-data'],
+    queryKey: ["live-data"],
     queryFn: fetchLiveData,
     refetchInterval: 5000, // Refetch every 5 seconds
     blockingConfig: {
-      scope: 'dashboard',
-      onLoading: true,   // Block initial load
+      scope: "dashboard",
+      onLoading: true, // Block initial load
       onFetching: false, // Don't block background refetch
-      reasonOnLoading: 'Loading data...',
-    }
+      reasonOnLoading: "Loading data...",
+    },
   });
 
   return <div>Data: {query.data?.value}</div>;
@@ -693,14 +685,14 @@ function LiveData() {
 ```tsx
 function CriticalDataLoader() {
   const query = useBlockingQuery({
-    queryKey: ['critical-data'],
+    queryKey: ["critical-data"],
     queryFn: fetchCriticalData,
     blockingConfig: {
-      scope: 'app',
+      scope: "app",
       onError: true, // Block UI on error
-      reasonOnLoading: 'Loading critical data...',
-      reasonOnError: 'Critical error - please refresh',
-    }
+      reasonOnLoading: "Loading critical data...",
+      reasonOnError: "Critical error - please refresh",
+    },
   });
 
   return <div>Content</div>;
@@ -753,4 +745,4 @@ See [CHANGELOG.md](./CHANGELOG.md) for a detailed list of changes in each versio
 
 ## License
 
-MIT © Olexii Kyrychenko
+MIT © Oleksii Kyrychenko
