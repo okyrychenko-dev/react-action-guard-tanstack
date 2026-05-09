@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-05-09
+
+### Changed
+
+- Raised `@okyrychenko-dev/react-action-guard` compatibility to the `1.0.3` line.
+- Prepared package metadata for the coordinated `react-action-guard` stability release.
+
 ## [0.3.3] - 2026-04-18
 
 ### Changed
@@ -193,7 +200,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔍 TypeScript type definitions with detailed annotations
 - ✅ 41 unit tests with 95%+ coverage
 
-[Unreleased]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.3...HEAD
+[Unreleased]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.4...HEAD
+[0.3.4]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/okyrychenko-dev/react-action-guard-tanstack/compare/v0.3.0...v0.3.1

@@ -307,11 +307,11 @@ describe("useBlockingInfiniteQuery", () => {
   });
 
   it("should keep a single blocker across rerenders with inline blocking config", async () => {
-    let resolveQuery: ((value: { data: string[]; nextCursor: number }) => void) | undefined;
+    let resolveQuery: ((value: { data: Array<string>; nextCursor: number }) => void) | undefined;
 
     const queryFn = vi.fn().mockImplementation(
       () =>
-        new Promise<{ data: string[]; nextCursor: number }>((resolve) => {
+        new Promise<{ data: Array<string>; nextCursor: number }>((resolve) => {
           resolveQuery = resolve;
         })
     );
@@ -359,11 +359,11 @@ describe("useBlockingInfiniteQuery", () => {
   });
 
   it("should clean up correctly in StrictMode", async () => {
-    let resolveQuery: ((value: { data: string[]; nextCursor: number }) => void) | undefined;
+    let resolveQuery: ((value: { data: Array<string>; nextCursor: number }) => void) | undefined;
 
     const queryFn = vi.fn().mockImplementation(
       () =>
-        new Promise<{ data: string[]; nextCursor: number }>((resolve) => {
+        new Promise<{ data: Array<string>; nextCursor: number }>((resolve) => {
           resolveQuery = resolve;
         })
     );

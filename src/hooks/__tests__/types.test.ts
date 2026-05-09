@@ -1,16 +1,16 @@
-import type { InfiniteData, UseQueryResult } from "@tanstack/react-query";
 import { expect, it } from "vitest";
 import { useBlockingInfiniteQuery } from "../useBlockingInfiniteQuery";
 import { useBlockingMutation } from "../useBlockingMutation";
 import { useBlockingQueries } from "../useBlockingQueries";
 import { useBlockingQuery } from "../useBlockingQuery";
+import type { InfiniteData, UseQueryResult } from "@tanstack/react-query";
 
 type IsEqual<A, B> =
-  (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
 
 declare function assertType<T extends true>(): void;
 
-function tuple<T extends unknown[]>(...values: T): T {
+function tuple<T extends Array<unknown>>(...values: T): T {
   return values;
 }
 
@@ -28,7 +28,7 @@ it("preserves query select inference", () => {
 
   type QueryResult = ReturnType<typeof useTypedQuery>;
 
-  assertType<IsEqual<QueryResult, UseQueryResult<string, Error>>>();
+  assertType<IsEqual<QueryResult, UseQueryResult<string>>>();
   assertType<IsEqual<QueryResult["data"], string | undefined>>();
 });
 
@@ -49,10 +49,10 @@ it("preserves infinite query data shape", () => {
   }
 
   type InfiniteResult = ReturnType<typeof useTypedInfiniteQuery>;
-  type PageData = {
-    items: number[];
+  interface PageData {
+    items: Array<number>;
     nextPage: number;
-  };
+  }
 
   assertType<IsEqual<InfiniteResult["data"], InfiniteData<PageData> | undefined>>();
 });
@@ -94,7 +94,7 @@ it("preserves tuple inference for parallel queries", () => {
         {
           queryKey: tuple("posts"),
           queryFn: async () => [{ id: 1, title: "Hello" }],
-        },
+        }
       ),
       {
         scope: "queries",
@@ -105,9 +105,7 @@ it("preserves tuple inference for parallel queries", () => {
   type QueryResults = ReturnType<typeof useTypedQueries>;
 
   assertType<IsEqual<QueryResults[0]["data"], string | undefined>>();
-  assertType<
-    IsEqual<QueryResults[1]["data"], Array<{ id: number; title: string }> | undefined>
-  >();
+  assertType<IsEqual<QueryResults[1]["data"], Array<{ id: number; title: string }> | undefined>>();
 
   expect(true).toBe(true);
 });

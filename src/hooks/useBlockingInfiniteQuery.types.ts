@@ -1,4 +1,3 @@
-import type { BaseBlockingConfig } from "../types";
 import type {
   DefaultError,
   DefinedInitialDataInfiniteOptions,
@@ -7,6 +6,7 @@ import type {
   UndefinedInitialDataInfiniteOptions,
   UseInfiniteQueryOptions,
 } from "@tanstack/react-query";
+import type { BaseBlockingConfig } from "../types";
 
 /**
  * Configuration for infinite query blocking with dynamic reasons.
@@ -68,9 +68,9 @@ export interface UseBlockingInfiniteQueryOptions<
   blockingConfig: InfiniteQueryBlockingConfig;
 }
 
-type BlockingInfiniteQueryConfig = {
+interface BlockingInfiniteQueryConfig {
   blockingConfig: InfiniteQueryBlockingConfig;
-};
+}
 
 export type UndefinedInitialDataBlockingInfiniteQueryOptions<
   TQueryFnData,

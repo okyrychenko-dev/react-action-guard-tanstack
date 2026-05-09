@@ -54,4 +54,4 @@ export type UseBlockingQueriesOptions<
   TQueryKey extends QueryKey = QueryKey,
 > = UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>;
 
-export type BlockingQueriesInput<T extends unknown[]> = readonly [...QueriesOptions<T>];
+export type BlockingQueriesInput<T extends Array<unknown>> = readonly [...QueriesOptions<T>];

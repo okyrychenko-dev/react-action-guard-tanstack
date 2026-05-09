@@ -1,4 +1,3 @@
-import type { BaseBlockingConfig } from "../types";
 import type {
   DefaultError,
   DefinedInitialDataOptions,
@@ -6,6 +5,7 @@ import type {
   UndefinedInitialDataOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
+import type { BaseBlockingConfig } from "../types";
 
 /**
  * Configuration for query blocking with dynamic reasons.
@@ -65,9 +65,9 @@ export interface UseBlockingQueryOptions<
   blockingConfig: QueryBlockingConfig;
 }
 
-type BlockingQueryConfig = {
+interface BlockingQueryConfig {
   blockingConfig: QueryBlockingConfig;
-};
+}
 
 export type UndefinedInitialDataBlockingQueryOptions<
   TQueryFnData = unknown,
